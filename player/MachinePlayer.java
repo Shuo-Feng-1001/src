@@ -19,6 +19,8 @@ public class MachinePlayer extends Player {
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
+  public static final int ADD = 1;
+  public static final int STEP = 2; 
   
   
   
@@ -71,12 +73,12 @@ public class MachinePlayer extends Player {
 		Chip chip = new Chip(m);
 		board.makeMove(m, opponent);
 		// ADD
-		if(m.moveKind == 1){
+		if(m.moveKind == ADD){
 			this.opponentChips[oppoChipsNum] = chip;
 			oppoChipsNum++;
 		}
 		// STEP
-		if(m.moveKind == 2){
+		if(m.moveKind == STEP){
 			Chip oldchip = new Chip(m.x2,m.y2);
 			for(int i=0; i<oppoChipsNum; i++){
 				if(opponentChips[i].equals(oldchip)){
@@ -100,12 +102,12 @@ public class MachinePlayer extends Player {
 		this.board.makeMove(m, color);
 		Chip chip = new Chip(m);
 		// ADD
-		if(m.moveKind == 1){
+		if(m.moveKind == ADD){
 			this.machineChips[machineChipsNum] = chip;
 			machineChipsNum++;
 		}
 		// STEP
-		if(m.moveKind == 2){
+		if(m.moveKind == STEP){
 			Chip oldchip = new Chip(m.x2,m.y2);
 			for(int i=0; i<machineChipsNum; i++){
 				if(machineChips[i].equals(oldchip)){
