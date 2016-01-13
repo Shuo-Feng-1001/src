@@ -12,6 +12,30 @@ public class Chip {
 	public final static int DIAGONALB = 4;
 	
 	
+	/*   Constructor   */
+	public Chip(Move m,int color) {
+		this.chipValue = color==0? 2:1;
+		this.x = m.x1;
+		this.y = m.y1;
+		this.visited = false;
+		this.direct = 0;
+	}
+	public Chip(int x, int y,int color) {
+		this.chipValue = color==0? 2:1;
+		this.x = x;
+		this.y = y;
+		this.visited = false;
+		this.direct = 0;
+	}
+	public Chip(){
+		this.x = 0;
+		this.y = 0;
+		this.visited = false;
+		this.direct = 0;
+		this.chipValue =0;
+	}
+	
+	
 	
 	public int getX() {
 		return x;
@@ -39,24 +63,7 @@ public class Chip {
 		this.chipValue = chipValue;
 	}
 	
-	public Chip(Move m) {
-		this.x = m.x1;
-		this.y = m.y1;
-		this.visited = false;
-		this.direct = 0;
-	}
-	public Chip(int x, int y) {
-		this.x = x;
-		this.y = y;
-		this.visited = false;
-		this.direct = 0;
-	}
-	public Chip(){
-		this.x = 0;
-		this.y = 0;
-		this.visited = false;
-		this.direct = 0;
-	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -67,7 +74,7 @@ public class Chip {
 	}
 	public boolean equals(Object chip) {
 		if(chip instanceof Chip){
-			if(((Chip) chip).x == this.x &&  ((Chip) chip).y == this.y){
+			if(((Chip) chip).x == this.x &&  ((Chip) chip).y == this.y && ((Chip) chip).chipValue == this.chipValue){
 				return true;
 			}
 		}	

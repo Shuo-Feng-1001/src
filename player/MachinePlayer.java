@@ -82,7 +82,7 @@ public class MachinePlayer extends Player {
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
 	if(board.isValidMove(m, opponent)){
-		Chip chip = new Chip(m);
+		Chip chip = new Chip(m,this.opponent);
 		board.makeMove(m, opponent);
 		// ADD
 		if(m.moveKind == ADD){
@@ -91,7 +91,7 @@ public class MachinePlayer extends Player {
 		}
 		// STEP
 		if(m.moveKind == STEP){
-			Chip oldchip = new Chip(m.x2,m.y2);
+			Chip oldchip = new Chip(m.x2,m.y2,this.opponent);
 			for(int i=0; i<oppoChipsNum; i++){
 				if(opponentChips[i].equals(oldchip)){
 					opponentChips[i] = chip;
@@ -112,7 +112,7 @@ public class MachinePlayer extends Player {
   public boolean forceMove(Move m) {
 	if(board.isValidMove(m, color)){
 		this.board.makeMove(m, color);
-		Chip chip = new Chip(m);
+		Chip chip = new Chip(m,color);
 		// ADD
 		if(m.moveKind == ADD){
 			this.machineChips[machineChipsNum] = chip;
@@ -120,7 +120,7 @@ public class MachinePlayer extends Player {
 		}
 		// STEP
 		if(m.moveKind == STEP){
-			Chip oldchip = new Chip(m.x2,m.y2);
+			Chip oldchip = new Chip(m.x2,m.y2,color);
 			for(int i=0; i<machineChipsNum; i++){
 				if(machineChips[i].equals(oldchip)){
 					machineChips[i] = chip;
@@ -175,20 +175,20 @@ public class MachinePlayer extends Player {
 	 int opponentValue = chip.getChipValue() == 1? 2:1;
 	 boolean flag = true;
 	 for(int i=y-1; i>=0; i--){
-		 if(this.board.elementAt(i, y) == opponentValue ){
+		 if(this.board.elementAt(x,i) == opponentValue ){
 			 flag = false;
 		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
 			 chip.setDirect(VERTICAL);
 			 neighbors.insertBack(chip);
 		 }
 	 }
 	 flag = true;
 	 for(int i=y+1; i<8; i++){
-		 if(this.board.elementAt(i, y) == opponentValue ){
+		 if(this.board.elementAt(x,i) == opponentValue ){
 			 flag = false;
 		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
 			 chip.setDirect(VERTICAL);
 			 neighbors.insertBack(chip);
 		 }
@@ -225,7 +225,7 @@ public class MachinePlayer extends Player {
 		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
 		 boolean flag = true;
 		 int i = x,j = y;
-		 while(i < DIMENSION && j < DIMENSION){
+		 while(i < DIMENSION || j < DIMENSION){
 			 i++;
 			 j++;
 			 if(this.board.elementAt(i, j) == opponentValue ){
@@ -239,7 +239,7 @@ public class MachinePlayer extends Player {
 		 flag = true;
 		 i = x;
 		 j = y;
-		 while(i > 0 && j > 0){
+		 while(i >= 0 || j >= 0){
 			 i--;
 			 j--;
 			 if(this.board.elementAt(i, y) == opponentValue ){
