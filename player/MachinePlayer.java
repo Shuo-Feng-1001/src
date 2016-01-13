@@ -14,6 +14,8 @@ public class MachinePlayer extends Player {
   private List list;
   private int chips;
   private SimpleBoard board;
+  final private int color;
+  final private int opponent;
   
   
   
@@ -21,26 +23,33 @@ public class MachinePlayer extends Player {
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
-	  if(color == 0){
-		  this.myName = "Black";
-	  }else{
-		  this.myName = "White";
-	  }
-	  chips = 10;
-	  board = new SimpleBoard();
+	  this(color,2);
   }
 
-  public SimpleBoard getBoard(){
-	  return board;
-  }
+ 
   
   
   
   // Creates a machine player with the given color and search depth.  Color is
   // either 0 (black) or 1 (white).  (White has the first move.)
   public MachinePlayer(int color, int searchDepth) {
+	  if(color == 0){
+		  this.myName = "BLACK";
+	  }else{
+		  this.myName = "WHITE";
+	  }
+	  chips = 10;
+	  board = new SimpleBoard();
+	  this.color = color;
+	  opponent = (color+1) % 2;
   }
 
+  
+  public SimpleBoard getBoard(){
+	  return board;
+  }
+  
+  
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
@@ -52,7 +61,11 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    return false;
+	if(board.isValidMove(m, color)){
+		board.makeMove(m, opponent);
+		return true;
+	}
+	return false;
   }
 
   // If the Move m is legal, records the move as a move by "this" player
@@ -61,10 +74,12 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-	if(this.board.isValidMove(m, this)){
-		
-	}
-    return false;
+	if(board.isValidMove(m, color)){
+		this.board.makeMove(m, color);
+		return true;
+	}else{
+		return false;
+	}   
   }
   
   

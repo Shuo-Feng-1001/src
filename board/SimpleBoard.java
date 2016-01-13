@@ -16,8 +16,8 @@ import player.Player;
 
 public class SimpleBoard {
   private final static int DIMENSION = 8;
-  private final static int Black = 2;
-  private final static int White = 1;
+  private final static int BLACK = 2;
+  private final static int WHITE = 1;
   private int[][] grid;
 
   /**
@@ -37,13 +37,10 @@ public class SimpleBoard {
     grid[0][7] = grid[7][7] = grid[0][0] = grid[7][0] = 5;
   }
   
-  public boolean isValidMove(Move m, MachinePlayer player){
+  public boolean isValidMove(Move m, int color){
 	  int tempX = m.x1;
 	  int tempY = m.y2;
-	  SimpleBoard tempGrid;
-	  int chipValue = player.myName== "White"? White:Black;
-	  
-	  
+	  int chipValue = color== 1? WHITE:BLACK;
 	  int flag = 0;
 	  boolean condition = false;
 	  /*
@@ -55,38 +52,37 @@ public class SimpleBoard {
 	  }
 	  /*
 	   * check 3. no chip may be placed in a goal of the opposite color
-	   * white goal area: x == 0 || x == 7
-	   * black goal area: y == 0 || y == 7
+	   * WHITE goal area: x == 0 || x == 7
+	   * BLACK goal area: y == 0 || y == 7
 	   */
-	  if(player.myName == "White" && (tempY == 0 || tempY == 7)){
+	  if(color == 1 && (tempY == 0 || tempY == 7)){
 		  return false;
 	  }
-	  if(player.myName == "Black" && (tempX == 0 || tempX == 7)){
+	  if(color == 0 && (tempX == 0 || tempX == 7)){
 		  return false;
 	  }
 	  /*
 	   * check 4. a player may not have more than two chips in a connected group
 	   */
 	  // tempGrid the player's current board
-	  tempGrid = player.getBoard();
 	  // assuming that this chip is placed at this grid
 	  // add = 1;  step = 2;
 	  if(m.moveKind == 2){
 		 // if the move is step, we need to remove the old one
-		 tempGrid.setElementAt(m.x2, m.y2, 0);
+		 setElementAt(m.x2, m.y2, 0);
 		 flag = 1;
 	  }
 	  	  
-	  condition = !isNarrowConnected(tempX, tempY, player);
+	  condition = !isNarrowConnected(tempX, tempY, color);
 	  if(flag == 1){
-		  tempGrid.setElementAt(m.x2, m.y2, chipValue);
+		  setElementAt(m.x2, m.y2, chipValue);
 	  }  
 	  return condition;
   }
   
-  public boolean isNarrowConnected(int x, int y, MachinePlayer player){
+  public boolean isNarrowConnected(int x, int y, int color){
 	  SimpleBoard board = new SimpleBoard();
-	  int number = numNarrowConnected(x,y,player,board,1);
+	  int number = numNarrowConnected(x,y,color,board,1);
 	  return number>2? true:false;
   }
   /**
@@ -96,8 +92,8 @@ public class SimpleBoard {
    * @param y  the pointed to be check, y axis
    * @return true, is the given condition is true
    */
-  public int numNarrowConnected(int x, int y, MachinePlayer player,SimpleBoard board,int number){
-	  int chipValue = player.myName== "White"? White:Black;
+  public int numNarrowConnected(int x, int y, int color,SimpleBoard board,int number){
+	  int chipValue = color== 1? WHITE:BLACK;
 	  //direction array includes 8 direction given the specific point
 	  int[][] direction = {{-1,-1},{-1,0},{-1,1},{1,-1},{1,0},{1,1},{0,-1},{0,1}};
 	  int posX; 
@@ -109,15 +105,32 @@ public class SimpleBoard {
 		  if(posX >= 0 && posY >= 0 && posX < DIMENSION && posY < DIMENSION ){
 			  if(elementAt(posX,posY) == chipValue && board.elementAt(posX, posY) == 0){
 				  board.setElementAt(posX, posY, 1);
-				  count+= numNarrowConnected(posX,posY,player,board,count);
+				  count+= numNarrowConnected(posX,posY,color,board,count);
 			  }
 		  }	  
 	  }
 	 return count;
   }
   
-  
-  
+ /**
+  * makeMave() method is to change the current given the new position
+  * @param m   position, x1,y1 new position, if x2,y2, the old
+  * @param color  BLACK or WHITE
+  */
+  public void makeMove(Move m, int color){
+	  /*
+	   * x1, y1 are the new position 
+	   */
+	  // ADD
+	  int chipValue = color== 1? WHITE:BLACK;
+	  if(m.moveKind == 1){
+		  this.setElementAt(m.x1, m.y1, chipValue);
+	  // STEP
+	  }else if(m.moveKind == 2){
+		  this.setElementAt(m.x2, m.y2, 0);
+		  this.setElementAt(m.x1, m.x2, chipValue);
+	  }
+  }
   
   
   /**
@@ -218,13 +231,13 @@ public class SimpleBoard {
 	    MachinePlayer player = new MachinePlayer(0);
 	    System.out.println("the player is: " + player.myName);
 	    Move move = new Move(7,2);
-	    System.out.println(board.isValidMove(move, player));
+	    System.out.println(board.isValidMove(move, 0));
 	    player.getBoard().setElementAt(1, 1, 2);
 	    player.getBoard().setElementAt(1, 2, 2);
 	    board.setElementAt(1, 1, 2);
 	    board.setElementAt(1, 2, 2);
 	    System.out.println(player.getBoard());
-	    System.out.println("the forth condition: " + board.isNarrowConnected(1,0,player));
+	    System.out.println("the forth condition: " + board.isNarrowConnected(1,0,0));
 	    SimpleBoard board2 = null;
 		try {
 			board2 = (SimpleBoard) board.clone();
@@ -237,7 +250,7 @@ public class SimpleBoard {
 //	    for(int y = 0; y< DIMENSION; y++ ){
 //			for(int x = 0; x < DIMENSION; x++){
 //				if(board.elementAt(x, y) == 0){
-//					if((player.myName == "White" && y != 0 && y != 7 ) || (player.myName == "Black" && x != 0 && x != 7)){
+//					if((player.myName == "WHITE" && y != 0 && y != 7 ) || (player.myName == "BLACK" && x != 0 && x != 7)){
 ////						System.out.println("x: " + x + " y: " + y);
 //						if(!board.isNarrowConnected(x, y, player)){
 //							player.getBoard().setElementAt(x, y, 2);
