@@ -4,6 +4,7 @@ package player;
 
 import board.SimpleBoard;
 import list.List;
+import list.SList;
 
 /**
  *  An implementation of an automatic Network player.  Keeps track of moves
@@ -19,7 +20,10 @@ public class MachinePlayer extends Player {
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
-  
+  public final static int HORIZONTAL = 1;
+  public final static int VERTICAL = 2;
+  public final static int DIAGONALF = 3;
+  public final static int DIAGONALB = 4;
   
   
   
@@ -120,33 +124,110 @@ public class MachinePlayer extends Player {
   }
   
   
-  public Chip[] findNeighbor(Chip chip){
-	 Chip[] neighbors = new Chip[10];
+  public List findNeighbor(Chip chip){
+	 List neighbors = new SList();
 	 
 	 
-	 return null;
+	 
+	 return neighbors;
 	 
   }
  
-  public void horizonCheck(Chip chip){
+  public void horizonCheck(Chip chip,List neighbors){
 	 int x = chip.getX();
 	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
 	 for(int i=x-1; i>=0; i--){
-		 if(this.board.elementAt(i, y)) 
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
 	 }
 	 for(int i=x+1; i<8; i++){
-		 if(board)
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
 	 }
-	 
   }
-  public void vertiCheck(Chip chip){
-	 
+  public void vertiCheck(Chip chip,List neighbors){
+	 int x = chip.getX();
+	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
+	 for(int i=y-1; i>=0; i--){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(VERTICAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+	 for(int i=y+1; i<8; i++){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(VERTICAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
   }
-  public void diagnfCheck(Chip chip){
-	 
+  public void diagnfCheck(Chip chip,List neighbors){
+	 int x = chip.getX();
+	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
+	 for(int i=x-1; i>=0; i--){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+	 for(int i=x+1; i<8; i++){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
   }
   public void diagnbCheck(Chip chip){
-
+	  int x = chip.getX();
+		 int y = chip.getY();
+		 int opponentValue = chip.getChipValue() == 1? 2:1;
+		 boolean flag = true;
+		 for(int i=x-1; i>=0; i--){
+			 if(this.board.elementAt(i, y) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+				 chip.setDirect(HORIZONTAL);
+				 neighbors.insertBack(chip);
+			 }
+		 }
+		 for(int i=x+1; i<8; i++){
+			 if(this.board.elementAt(i, y) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+				 chip.setDirect(HORIZONTAL);
+				 neighbors.insertBack(chip);
+			 }
+		 }
   }
 
   public Connection findNetwork(){

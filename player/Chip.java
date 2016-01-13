@@ -5,6 +5,7 @@ public class Chip {
 	private int y;
 	private boolean visited;
 	private int direct;
+	private int chipValue;
 	public final static int HORIZONTAL = 1;
 	public final static int VERTICAL = 2;
 	public final static int DIAGONALF = 3;
@@ -17,6 +18,25 @@ public class Chip {
 	}
 	public int getY() {
 		return y;
+	}
+	
+	public boolean isVisited() {
+		return visited;
+	}
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+	public int getDirect() {
+		return direct;
+	}
+	public void setDirect(int direct) {
+		this.direct = direct;
+	}
+	public int getChipValue() {
+		return chipValue;
+	}
+	public void setChipValue(int chipValue) {
+		this.chipValue = chipValue;
 	}
 	
 	public Chip(Move m) {
