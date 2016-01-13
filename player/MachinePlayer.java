@@ -4,6 +4,7 @@ package player;
 
 import board.SimpleBoard;
 import list.List;
+import list.SList;
 
 /**
  *  An implementation of an automatic Network player.  Keeps track of moves
@@ -19,9 +20,20 @@ public class MachinePlayer extends Player {
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
+
   public static final int ADD = 1;
   public static final int STEP = 2; 
   
+  public final static int HORIZONTAL = 1;
+  public final static int VERTICAL = 2;
+  public final static int DIAGONALF = 3;
+  public final static int DIAGONALB = 4;
+  
+  private final static int BLACK = 2;
+  private final static int WHITE = 1;
+  private final static int EMPTY = 0;
+  private final static int DIMENSION = 8;
+
   
   
   
@@ -122,34 +134,122 @@ public class MachinePlayer extends Player {
   }
   
   
-  public Chip[] findNeighbor(Chip chip){
-	 Chip[] neighbors = new Chip[10];
+  public List findNeighbor(Chip chip){
+	 List neighbors = new SList();
 	 
 	 
-	 return null;
+	 
+	 return neighbors;
 	 
   }
  
-  public void horizonCheck(Chip chip){
+  public void horizonCheck(Chip chip,List neighbors){
 	 int x = chip.getX();
 	 int y = chip.getY();
-	 int opponentValue = chip.getChipValue() 
+
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
 	 for(int i=x-1; i>=0; i--){
-		 if(this.board.elementAt(i, y)) 
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+	 flag = true;
+	 for(int i=x+1; i<8; i++){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+  }
+  public void vertiCheck(Chip chip,List neighbors){
+	 int x = chip.getX();
+	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
+	 for(int i=y-1; i>=0; i--){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(VERTICAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+	 flag = true;
+	 for(int i=y+1; i<8; i++){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(VERTICAL);
+			 neighbors.insertBack(chip);
+		 }
+	 }
+  }
+  public void diagnfCheck(Chip chip,List neighbors){
+	 int x = chip.getX();
+	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 boolean flag = true;
+	 flag = true;
+	 for(int i=x-1; i>=0; i--){
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
 	 }
 	 for(int i=x+1; i<8; i++){
-		 if(board)
+		 if(this.board.elementAt(i, y) == opponentValue ){
+			 flag = false;
+		 }
+		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 chip.setDirect(HORIZONTAL);
+			 neighbors.insertBack(chip);
+		 }
 	 }
-	 
   }
-  public void vertiCheck(Chip chip){
-	 
-  }
-  public void diagnfCheck(Chip chip){
-	 
-  }
-  public void diagnbCheck(Chip chip){
-
+  public void diagnbCheck(Chip chip, List neighbors){
+	  	int x = chip.getX();
+		 int y = chip.getY();
+		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
+		 boolean flag = true;
+		 int i = x,j = y;
+		 while(i < DIMENSION && j < DIMENSION){
+			 i++;
+			 j++;
+			 if(this.board.elementAt(i, j) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+				 chip.setDirect(DIAGONALB);
+				 neighbors.insertBack(chip);
+			 }
+		 }
+		 flag = true;
+		 i = x;
+		 j = y;
+		 while(i > 0 && j > 0){
+			 i--;
+			 j--;
+			 if(this.board.elementAt(i, y) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+				 chip.setDirect(DIAGONALB);
+				 neighbors.insertBack(chip);
+			 }
+		 }
   }
 
   public Connection findNetwork(){
