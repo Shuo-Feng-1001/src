@@ -3,6 +3,7 @@ package player;
 public class Chip {
 	private int x;
 	private int y;
+	private boolean visited;
 	public int getX() {
 		return x;
 	}
@@ -13,10 +14,12 @@ public class Chip {
 	public Chip(Move m) {
 		this.x = m.x1;
 		this.y = m.y1;
+		this.visited = false;
 	}
 	public Chip(int x, int y) {
 		this.x = x;
 		this.y = y;
+		this.visited = false;
 	}
 	@Override
 	public int hashCode() {

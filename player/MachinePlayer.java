@@ -120,6 +120,13 @@ public class MachinePlayer extends Player {
   }
   
   
+  
+  
+  
+  
+  
+  
+  
   public Connection findNetwork(){
 	return null;
 	  
