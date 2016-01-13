@@ -18,6 +18,7 @@ public class SimpleBoard {
   private final static int DIMENSION = 8;
   private final static int BLACK = 2;
   private final static int WHITE = 1;
+  private final static int EMPTY = 0;
   private int[][] grid;
 
   /**
@@ -39,7 +40,7 @@ public class SimpleBoard {
   
   public boolean isValidMove(Move m, int color){
 	  int tempX = m.x1;
-	  int tempY = m.y2;
+	  int tempY = m.y1;
 	  int chipValue = color== 1? WHITE:BLACK;
 	  int flag = 0;
 	  boolean condition = false;
@@ -47,7 +48,7 @@ public class SimpleBoard {
 	   * check : 1. no chip may be placed in a square that is already occupied
 	   * 		 2. no chip may be placed in any of the four corners
 	   */
-	  if(elementAt(tempX,tempY) != 0){
+	  if(elementAt(tempX,tempY) != EMPTY){
 		  return false;
 	  }
 	  /*
@@ -69,7 +70,7 @@ public class SimpleBoard {
 	  // add = 1;  step = 2;
 	  if(m.moveKind == 2){
 		 // if the move is step, we need to remove the old one
-		 setElementAt(m.x2, m.y2, 0);
+		 setElementAt(m.x2, m.y2, EMPTY);
 		 flag = 1;
 	  }
 	  	  
@@ -128,10 +129,25 @@ public class SimpleBoard {
 	  // STEP
 	  }else if(m.moveKind == 2){
 		  this.setElementAt(m.x2, m.y2, 0);
-		  this.setElementAt(m.x1, m.x2, chipValue);
+		  this.setElementAt(m.x1, m.y1, chipValue);
 	  }
   }
-  
+   
+ /**
+  *  clone() method is to copy the current grid to the new grid 
+  *  convenient to operate
+  *  @return board, new grid
+  */
+  public SimpleBoard clone(){
+	  SimpleBoard board = new SimpleBoard();
+	  int[][] grid = board.grid;
+	  for(int y=0; y < DIMENSION; y++){
+		for(int x=0; x < DIMENSION; x++){
+			grid[x][y] = this.grid[x][y];
+		}
+	  }
+	  return board;
+  }
   
   /**
    *  Set the cell (x, y) in the board to the given value mod 3.
@@ -199,7 +215,9 @@ public class SimpleBoard {
 	  int sum = 0;
 	  for(int y=0; y < DIMENSION; y++){
 			for(int x=0; x < DIMENSION; x++){
-				sum = 3 * sum + this.elementAt(x, y);
+				if((x == 0 || x == DIMENSION) && (y == 0 || y == DIMENSION)){
+					sum = 3 * sum + this.elementAt(x, y);
+				}	
 			}
 		}
 	  return sum;
@@ -239,13 +257,10 @@ public class SimpleBoard {
 	    System.out.println(player.getBoard());
 	    System.out.println("the forth condition: " + board.isNarrowConnected(1,0,0));
 	    SimpleBoard board2 = null;
-		try {
-			board2 = (SimpleBoard) board.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    board2.setElementAt(0, 0, 2);
+		
+	    board2 = (SimpleBoard) board.clone();
+		
+	    board2.setElementAt(3, 1, 2);
 	    System.out.println(board2);
 //	    for(int y = 0; y< DIMENSION; y++ ){
 //			for(int x = 0; x < DIMENSION; x++){
