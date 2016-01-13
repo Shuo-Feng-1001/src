@@ -70,7 +70,7 @@ public class SimpleBoard {
 	  // add = 1;  step = 2;
 	  if(m.moveKind == 2){
 		 // if the move is step, we need to remove the old one
-		 setElementAt(m.x2, m.y2, 0);
+		 setElementAt(m.x2, m.y2, EMPTY);
 		 flag = 1;
 	  }
 	  	  
@@ -131,10 +131,25 @@ public class SimpleBoard {
 	  // STEP
 	  }else if(m.moveKind == 2){
 		  this.setElementAt(m.x2, m.y2, 0);
-		  this.setElementAt(m.x1, m.x2, chipValue);
+		  this.setElementAt(m.x1, m.y1, chipValue);
 	  }
   }
-  
+   
+ /**
+  *  clone() method is to copy the current grid to the new grid 
+  *  convenient to operate
+  *  @return board, new grid
+  */
+  public SimpleBoard clone(){
+	  SimpleBoard board = new SimpleBoard();
+	  int[][] grid = board.grid;
+	  for(int y=0; y < DIMENSION; y++){
+		for(int x=0; x < DIMENSION; x++){
+			grid[x][y] = this.grid[x][y];
+		}
+	  }
+	  return board;
+  }
   
   /**
    *  Set the cell (x, y) in the board to the given value mod 3.
@@ -208,6 +223,7 @@ public class SimpleBoard {
 						|| (x == 0 && y == DIMENSION))){
 					sum = 3 * sum + this.elementAt(x, y);
 				}
+
 			}
 		}
 		return sum;
@@ -247,13 +263,10 @@ public class SimpleBoard {
 //	    System.out.println(player.getBoard());
 	    System.out.println("the forth condition: " + board.isNarrowConnected(1,2,2));
 	    SimpleBoard board2 = null;
-		try {
-			board2 = (SimpleBoard) board.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    board2.setElementAt(0, 0, 2);
+		
+	    board2 = (SimpleBoard) board.clone();
+		
+	    board2.setElementAt(3, 1, 2);
 	    System.out.println(board2);
 //	    for(int y = 0; y< DIMENSION; y++ ){
 //			for(int x = 0; x < DIMENSION; x++){
