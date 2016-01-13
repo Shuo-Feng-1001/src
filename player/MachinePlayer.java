@@ -136,7 +136,19 @@ public class MachinePlayer extends Player {
   
   public List findNeighbor(Chip chip){
 	 List neighbors = new SList();
-	 
+	 int flag = chip.getDirect();
+	 if(flag != HORIZONTAL){
+		 horizonCheck(chip,neighbors);
+	 }
+	 if(flag != VERTICAL){
+		 vertiCheck(chip,neighbors);
+	 }
+	 if(flag != DIAGONALF){
+		 diagnfCheck(chip,neighbors);
+	 }
+	 if(flag != DIAGONALB){
+		 diagnbCheck(chip,neighbors);
+	 }
 	 
 	 
 	 return neighbors;
@@ -226,7 +238,7 @@ public class MachinePlayer extends Player {
 		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
 		 boolean flag = true;
 		 int i = x,j = y;
-		 while(i < DIMENSION || j < DIMENSION){
+		 while(i < DIMENSION && j < DIMENSION){
 			 i++;
 			 j++;
 			 if(this.board.elementAt(i, j) == opponentValue ){
@@ -240,7 +252,7 @@ public class MachinePlayer extends Player {
 		 flag = true;
 		 i = x;
 		 j = y;
-		 while(i >= 0 || j >= 0){
+		 while(i >= 0 && j >= 0){
 			 i--;
 			 j--;
 			 if(this.board.elementAt(i, y) == opponentValue ){
