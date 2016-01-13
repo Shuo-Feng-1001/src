@@ -89,6 +89,7 @@ public class SimpleBoard {
    * @param y  the pointed to be check, y axis
    * @return true, is the given condition is true
    */
+
 	public boolean isNarrowConnected(int x, int y, int color) {
 		SimpleBoard board = new SimpleBoard();
 		int number = numNarrowConnected(x, y, color, board, 1);
@@ -142,10 +143,9 @@ public class SimpleBoard {
   */
   public SimpleBoard clone(){
 	  SimpleBoard board = new SimpleBoard();
-	  int[][] grid = board.grid;
 	  for(int y=0; y < DIMENSION; y++){
 		for(int x=0; x < DIMENSION; x++){
-			grid[x][y] = this.grid[x][y];
+			 board.grid[x][y] = this.grid[x][y];
 		}
 	  }
 	  return board;
@@ -252,15 +252,17 @@ public class SimpleBoard {
 //	    double fval = Math.random() * 12;
 //		int value = (int) fval;
 //		System.out.println(value);
-//	    MachinePlayer player = new MachinePlayer(0);
+
+	    MachinePlayer player = new MachinePlayer(0);
 //	    System.out.println("the player is: " + player.myName);
 //	    Move move = new Move(7,2);
 //	    System.out.println(board.isValidMove(move, 0));
-	    board.setElementAt(1, 1, 2);
+//	    player.getBoard().setElementAt(1, 1, 2);
 //	    player.getBoard().setElementAt(1, 2, 2);
-//	    board.setElementAt(1, 1, 2);
+	    board.setElementAt(1, 1, 2);
 //	    board.setElementAt(1, 2, 2);
-//	    System.out.println(player.getBoard());
+	    System.out.println(board);
+
 	    System.out.println("the forth condition: " + board.isNarrowConnected(1,2,2));
 	    SimpleBoard board2 = null;
 		
