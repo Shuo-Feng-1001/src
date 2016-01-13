@@ -120,8 +120,8 @@ public class MachinePlayer extends Player {
   }
   
   
-  public int findNetwork(){
-	return 0;
+  public Connection findNetwork(){
+	return null;
 	  
   }
   
