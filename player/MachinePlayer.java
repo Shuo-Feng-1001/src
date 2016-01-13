@@ -207,7 +207,7 @@ public class MachinePlayer extends Player {
 		 }
 	 }
   }
-  public void diagnbCheck(Chip chip){
+  public void diagnbCheck(Chip chip,List neighbors){
 	  int x = chip.getX();
 		 int y = chip.getY();
 		 int opponentValue = chip.getChipValue() == 1? 2:1;
