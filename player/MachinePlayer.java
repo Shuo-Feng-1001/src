@@ -12,10 +12,13 @@ import list.List;
 public class MachinePlayer extends Player {
   public static int SEARCHDEPTH = 2;
   private List list;
-  private int chips;
+  private int machineChipsNum;
+  private int oppoChipsNum;
   private SimpleBoard board;
   final private int color;
   final private int opponent;
+  private Chip[] machineChips;
+  private Chip[] opponentChips;
   
   
   
@@ -35,10 +38,14 @@ public class MachinePlayer extends Player {
 	  }else{
 		  this.myName = "WHITE";
 	  }
-	  chips = 10;
+	  machineChipsNum = 0;
+	  oppoChipsNum = 0;
 	  board = new SimpleBoard();
 	  this.color = color;
 	  opponent = (color+1) % 2;
+	  machineChips = new Chip[10];
+	  opponentChips = new Chip[10];
+	  
   }
 
   
@@ -50,6 +57,8 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
+	  
+	  
     return new Move();
   } 
 
@@ -58,8 +67,24 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-	if(board.isValidMove(m, color)){
+	if(board.isValidMove(m, opponent)){
+		Chip chip = new Chip(m);
 		board.makeMove(m, opponent);
+		// ADD
+		if(m.moveKind == 1){
+			this.opponentChips[oppoChipsNum] = chip;
+			oppoChipsNum++;
+		}
+		// STEP
+		if(m.moveKind == 2){
+			Chip oldchip = new Chip(m.x2,m.y2);
+			for(int i=0; i<oppoChipsNum; i++){
+				if(opponentChips[i].equals(oldchip)){
+					opponentChips[i] = chip;
+				}
+			}
+		}
+		
 		return true;
 	}
 	return false;
@@ -73,6 +98,21 @@ public class MachinePlayer extends Player {
   public boolean forceMove(Move m) {
 	if(board.isValidMove(m, color)){
 		this.board.makeMove(m, color);
+		Chip chip = new Chip(m);
+		// ADD
+		if(m.moveKind == 1){
+			this.machineChips[machineChipsNum] = chip;
+			machineChipsNum++;
+		}
+		// STEP
+		if(m.moveKind == 2){
+			Chip oldchip = new Chip(m.x2,m.y2);
+			for(int i=0; i<machineChipsNum; i++){
+				if(machineChips[i].equals(oldchip)){
+					machineChips[i] = chip;
+				}
+			}
+		}
 		return true;
 	}else{
 		return false;
@@ -81,7 +121,7 @@ public class MachinePlayer extends Player {
   
   
   public int findNetwork(){
-	return chips;
+	return 0;
 	  
   }
   

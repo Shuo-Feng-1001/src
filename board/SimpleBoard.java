@@ -104,12 +104,16 @@ public class SimpleBoard {
 		  posX = x + direction[i][0];
 		  posY = y + direction[i][1];
 		  if(posX >= 0 && posY >= 0 && posX < DIMENSION && posY < DIMENSION ){
+			  if(posX == 1 && posY == 1){
+				  System.out.println("test: " + elementAt(posX,posY) + " " + board.elementAt(posX, posY));
+			  }
 			  if(elementAt(posX,posY) == chipValue && board.elementAt(posX, posY) == 0){
 				  board.setElementAt(posX, posY, 1);
 				  count+= numNarrowConnected(posX,posY,color,board,count);
 			  }
 		  }	  
 	  }
+	 System.out.println(count);
 	 return count;
   }
   
@@ -140,10 +144,9 @@ public class SimpleBoard {
   */
   public SimpleBoard clone(){
 	  SimpleBoard board = new SimpleBoard();
-	  int[][] grid = board.grid;
 	  for(int y=0; y < DIMENSION; y++){
 		for(int x=0; x < DIMENSION; x++){
-			grid[x][y] = this.grid[x][y];
+			 board.grid[x][y] = this.grid[x][y];
 		}
 	  }
 	  return board;
@@ -247,15 +250,15 @@ public class SimpleBoard {
 //		int value = (int) fval;
 //		System.out.println(value);
 	    MachinePlayer player = new MachinePlayer(0);
-	    System.out.println("the player is: " + player.myName);
-	    Move move = new Move(7,2);
-	    System.out.println(board.isValidMove(move, 0));
-	    player.getBoard().setElementAt(1, 1, 2);
-	    player.getBoard().setElementAt(1, 2, 2);
+//	    System.out.println("the player is: " + player.myName);
+//	    Move move = new Move(7,2);
+//	    System.out.println(board.isValidMove(move, 0));
+//	    player.getBoard().setElementAt(1, 1, 2);
+//	    player.getBoard().setElementAt(1, 2, 2);
 	    board.setElementAt(1, 1, 2);
-	    board.setElementAt(1, 2, 2);
-	    System.out.println(player.getBoard());
-	    System.out.println("the forth condition: " + board.isNarrowConnected(1,0,0));
+//	    board.setElementAt(1, 2, 2);
+	    System.out.println(board);
+	    System.out.println("the forth condition: " + board.isNarrowConnected(1,2,2));
 	    SimpleBoard board2 = null;
 		
 	    board2 = (SimpleBoard) board.clone();
