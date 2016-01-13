@@ -122,18 +122,56 @@ public class MachinePlayer extends Player {
   }
   
   
-  
-  
-  
-  
-  
-  
-  
+  public Chip[] findNeighbor(Chip chip){
+	 Chip[] neighbors = new Chip[10];
+	 
+	 
+	 return null;
+	 
+  }
+ 
+  public void horizonCheck(Chip chip){
+	 int x = chip.getX();
+	 int y = chip.getY();
+	 for(int i=x-1; i>=0; i--){
+		 if(this.board.elementAt(i, y)) 
+	 }
+	 for(int i=x+1; i<8; i++){
+		 if(board)
+	 }
+	 
+  }
+  public void vertiCheck(Chip chip){
+	 
+  }
+  public void diagnfCheck(Chip chip){
+	 
+  }
+  public void diagnbCheck(Chip chip){
+
+  }
+
   public Connection findNetwork(){
-	return null;
-	  
+    return null;
+    
   }
   
   
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

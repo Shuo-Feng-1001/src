@@ -4,6 +4,14 @@ public class Chip {
 	private int x;
 	private int y;
 	private boolean visited;
+	private int direct;
+	public final static int HORIZONTAL = 1;
+	public final static int VERTICAL = 2;
+	public final static int DIAGONALF = 3;
+	public final static int DIAGONALB = 4;
+	
+	
+	
 	public int getX() {
 		return x;
 	}
@@ -15,11 +23,19 @@ public class Chip {
 		this.x = m.x1;
 		this.y = m.y1;
 		this.visited = false;
+		this.direct = 0;
 	}
 	public Chip(int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.visited = false;
+		this.direct = 0;
+	}
+	public Chip(){
+		this.x = 0;
+		this.y = 0;
+		this.visited = false;
+		this.direct = 0;
 	}
 	@Override
 	public int hashCode() {
