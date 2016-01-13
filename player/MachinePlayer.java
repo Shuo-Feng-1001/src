@@ -20,10 +20,20 @@ public class MachinePlayer extends Player {
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
+
+  public static final int ADD = 1;
+  public static final int STEP = 2; 
+  
   public final static int HORIZONTAL = 1;
   public final static int VERTICAL = 2;
   public final static int DIAGONALF = 3;
   public final static int DIAGONALB = 4;
+  
+  private final static int BLACK = 2;
+  private final static int WHITE = 1;
+  private final static int EMPTY = 0;
+  private final static int DIMENSION = 8;
+
   
   
   
@@ -75,12 +85,12 @@ public class MachinePlayer extends Player {
 		Chip chip = new Chip(m,this.opponent);
 		board.makeMove(m, opponent);
 		// ADD
-		if(m.moveKind == 1){
+		if(m.moveKind == ADD){
 			this.opponentChips[oppoChipsNum] = chip;
 			oppoChipsNum++;
 		}
 		// STEP
-		if(m.moveKind == 2){
+		if(m.moveKind == STEP){
 			Chip oldchip = new Chip(m.x2,m.y2,this.opponent);
 			for(int i=0; i<oppoChipsNum; i++){
 				if(opponentChips[i].equals(oldchip)){
@@ -104,12 +114,12 @@ public class MachinePlayer extends Player {
 		this.board.makeMove(m, color);
 		Chip chip = new Chip(m,color);
 		// ADD
-		if(m.moveKind == 1){
+		if(m.moveKind == ADD){
 			this.machineChips[machineChipsNum] = chip;
 			machineChipsNum++;
 		}
 		// STEP
-		if(m.moveKind == 2){
+		if(m.moveKind == STEP){
 			Chip oldchip = new Chip(m.x2,m.y2,color);
 			for(int i=0; i<machineChipsNum; i++){
 				if(machineChips[i].equals(oldchip)){
@@ -136,6 +146,7 @@ public class MachinePlayer extends Player {
   public void horizonCheck(Chip chip,List neighbors){
 	 int x = chip.getX();
 	 int y = chip.getY();
+
 	 int opponentValue = chip.getChipValue() == 1? 2:1;
 	 boolean flag = true;
 	 for(int i=x-1; i>=0; i--){
@@ -188,6 +199,7 @@ public class MachinePlayer extends Player {
 	 int y = chip.getY();
 	 int opponentValue = chip.getChipValue() == 1? 2:1;
 	 boolean flag = true;
+	 flag = true;
 	 for(int i=x-1; i>=0; i--){
 		 if(this.board.elementAt(i, y) == opponentValue ){
 			 flag = false;
@@ -207,26 +219,35 @@ public class MachinePlayer extends Player {
 		 }
 	 }
   }
-  public void diagnbCheck(Chip chip,List neighbors){
-	  int x = chip.getX();
+
+  public void diagnbCheck(Chip chip, List neighbors){
+	  	 int x = chip.getX();
 		 int y = chip.getY();
-		 int opponentValue = chip.getChipValue() == 1? 2:1;
+		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
 		 boolean flag = true;
-		 for(int i=x-1; i>=0; i--){
-			 if(this.board.elementAt(i, y) == opponentValue ){
+		 int i = x,j = y;
+		 while(i < DIMENSION || j < DIMENSION){
+			 i++;
+			 j++;
+			 if(this.board.elementAt(i, j) == opponentValue ){
 				 flag = false;
 			 }
 			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-				 chip.setDirect(HORIZONTAL);
+				 chip.setDirect(DIAGONALB);
 				 neighbors.insertBack(chip);
 			 }
 		 }
-		 for(int i=x+1; i<8; i++){
+		 flag = true;
+		 i = x;
+		 j = y;
+		 while(i >= 0 || j >= 0){
+			 i--;
+			 j--;
 			 if(this.board.elementAt(i, y) == opponentValue ){
 				 flag = false;
 			 }
 			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-				 chip.setDirect(HORIZONTAL);
+				 chip.setDirect(DIAGONALB);
 				 neighbors.insertBack(chip);
 			 }
 		 }

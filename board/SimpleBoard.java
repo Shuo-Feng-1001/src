@@ -41,7 +41,7 @@ public class SimpleBoard {
   public boolean isValidMove(Move m, int color){
 	  int tempX = m.x1;
 	  int tempY = m.y1;
-	  int chipValue = color== 1? WHITE:BLACK;
+	  int chipValue = color == 1? WHITE:BLACK;
 	  int flag = 0;
 	  boolean condition = false;
 	  /*
@@ -81,11 +81,7 @@ public class SimpleBoard {
 	  return condition;
   }
   
-  public boolean isNarrowConnected(int x, int y, int color){
-	  SimpleBoard board = new SimpleBoard();
-	  int number = numNarrowConnected(x,y,color,board,1);
-	  return number>2? true:false;
-  }
+  
   /**
    * isNarrowConnected() is to check whether there is three or more chips of the same color in a cluster
    * if that happens, return true;
@@ -93,29 +89,32 @@ public class SimpleBoard {
    * @param y  the pointed to be check, y axis
    * @return true, is the given condition is true
    */
-  public int numNarrowConnected(int x, int y, int color,SimpleBoard board,int number){
-	  int chipValue = color== 1? WHITE:BLACK;
-	  //direction array includes 8 direction given the specific point
-	  int[][] direction = {{-1,-1},{-1,0},{-1,1},{1,-1},{1,0},{1,1},{0,-1},{0,1}};
-	  int posX; 
-	  int posY;
-	  int count = number;
-	  for(int i = 0; i<8; i++){
-		  posX = x + direction[i][0];
-		  posY = y + direction[i][1];
-		  if(posX >= 0 && posY >= 0 && posX < DIMENSION && posY < DIMENSION ){
-			  if(posX == 1 && posY == 1){
-				  System.out.println("test: " + elementAt(posX,posY) + " " + board.elementAt(posX, posY));
-			  }
-			  if(elementAt(posX,posY) == chipValue && board.elementAt(posX, posY) == 0){
-				  board.setElementAt(posX, posY, 1);
-				  count+= numNarrowConnected(posX,posY,color,board,count);
-			  }
-		  }	  
-	  }
-	 System.out.println(count);
-	 return count;
-  }
+
+	public boolean isNarrowConnected(int x, int y, int color) {
+		SimpleBoard board = new SimpleBoard();
+		int number = numNarrowConnected(x, y, color, board, 1);
+		return number > 2 ? true : false;
+	}
+
+	public int numNarrowConnected(int x, int y, int color, SimpleBoard board, int number) {
+		int chipValue = color == 1 ? WHITE : BLACK;
+		// direction array includes 8 direction given the specific point
+		int[][] direction = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { 0, 1 } };
+		int posX;
+		int posY;
+		int count = number;
+		for (int i = 0; i < 8; i++) {
+			posX = x + direction[i][0];
+			posY = y + direction[i][1];
+			if (posX >= 0 && posY >= 0 && posX < DIMENSION && posY < DIMENSION) {
+				if (elementAt(posX, posY) == chipValue && board.elementAt(posX, posY) == 0) {
+					board.setElementAt(posX, posY, 1);
+					count += numNarrowConnected(posX, posY, color, board, count);
+				}
+			}
+		}
+		return count;
+	}
   
  /**
   * makeMave() method is to change the current given the new position
@@ -214,17 +213,21 @@ public class SimpleBoard {
    *  @return a number between Integer.MIN_VALUE and Integer.MAX_VALUE.
    */
 
-  public int hashCode() {
-	  int sum = 0;
-	  for(int y=0; y < DIMENSION; y++){
-			for(int x=0; x < DIMENSION; x++){
-				if((x == 0 || x == DIMENSION) && (y == 0 || y == DIMENSION)){
+	public int hashCode() {
+		int sum = 0;
+		for (int y = 0; y < DIMENSION; y++) {
+			for (int x = 0; x < DIMENSION; x++) {
+				if (!((x == 0 && y == 0) 
+						|| (x == DIMENSION && y == DIMENSION) 
+						|| (x == DIMENSION && y == 0)
+						|| (x == 0 && y == DIMENSION))){
 					sum = 3 * sum + this.elementAt(x, y);
-				}	
+				}
+
 			}
 		}
-	  return sum;
-  }
+		return sum;
+	}
   
   
   @Override
@@ -249,6 +252,7 @@ public class SimpleBoard {
 //	    double fval = Math.random() * 12;
 //		int value = (int) fval;
 //		System.out.println(value);
+
 	    MachinePlayer player = new MachinePlayer(0);
 //	    System.out.println("the player is: " + player.myName);
 //	    Move move = new Move(7,2);
@@ -258,6 +262,7 @@ public class SimpleBoard {
 	    board.setElementAt(1, 1, 2);
 //	    board.setElementAt(1, 2, 2);
 	    System.out.println(board);
+
 	    System.out.println("the forth condition: " + board.isNarrowConnected(1,2,2));
 	    SimpleBoard board2 = null;
 		
