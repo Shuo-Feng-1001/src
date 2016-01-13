@@ -38,10 +38,10 @@ public class SimpleBoard {
     grid[0][7] = grid[7][7] = grid[0][0] = grid[7][0] = 5;
   }
   
-  public boolean isValidMove(Move m, int color){
+  public boolean isValidMove(Move m, int turn){
 	  int tempX = m.x1;
 	  int tempY = m.y1;
-	  int chipValue = color == 1? WHITE:BLACK;
+	  int chipValue = turn == MachinePlayer.WHITE_FIRST? WHITE:BLACK;
 	  int flag = 0;
 	  boolean condition = false;
 	  /*
@@ -56,10 +56,10 @@ public class SimpleBoard {
 	   * WHITE goal area: x == 0 || x == 7
 	   * BLACK goal area: y == 0 || y == 7
 	   */
-	  if(color == 1 && (tempY == 0 || tempY == 7)){
+	  if(turn == MachinePlayer.WHITE_FIRST && (tempY == 0 || tempY == 7)){
 		  return false;
 	  }
-	  if(color == 0 && (tempX == 0 || tempX == 7)){
+	  if(turn == MachinePlayer.BLACK_SECOND && (tempX == 0 || tempX == 7)){
 		  return false;
 	  }
 	  /*
@@ -74,7 +74,7 @@ public class SimpleBoard {
 		 flag = 1;
 	  }
 	  	  
-	  condition = !isNarrowConnected(tempX, tempY, color);
+	  condition = !isNarrowConnected(tempX, tempY, turn);
 	  if(flag == 1){
 		  setElementAt(m.x2, m.y2, chipValue);
 	  }  
@@ -90,14 +90,14 @@ public class SimpleBoard {
    * @return true, is the given condition is true
    */
 
-	public boolean isNarrowConnected(int x, int y, int color) {
+	public boolean isNarrowConnected(int x, int y, int turn) {
 		SimpleBoard board = new SimpleBoard();
-		int number = numNarrowConnected(x, y, color, board, 1);
+		int number = numNarrowConnected(x, y, turn, board, 1);
 		return number > 2 ? true : false;
 	}
 
-	public int numNarrowConnected(int x, int y, int color, SimpleBoard board, int number) {
-		int chipValue = color == 1 ? WHITE : BLACK;
+	public int numNarrowConnected(int x, int y, int turn, SimpleBoard board, int number) {
+		int chipValue = turn == MachinePlayer.WHITE_FIRST ? WHITE : BLACK;
 		// direction array includes 8 direction given the specific point
 		int[][] direction = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { 0, 1 } };
 		int posX;
@@ -109,7 +109,7 @@ public class SimpleBoard {
 			if (posX >= 0 && posY >= 0 && posX < DIMENSION && posY < DIMENSION) {
 				if (elementAt(posX, posY) == chipValue && board.elementAt(posX, posY) == 0) {
 					board.setElementAt(posX, posY, 1);
-					count += numNarrowConnected(posX, posY, color, board, count);
+					count += numNarrowConnected(posX, posY, turn, board, count);
 				}
 			}
 		}
@@ -119,14 +119,14 @@ public class SimpleBoard {
  /**
   * makeMave() method is to change the current given the new position
   * @param m   position, x1,y1 new position, if x2,y2, the old
-  * @param color  BLACK or WHITE
+  * @param turn  BLACK or WHITE
   */
-  public void makeMove(Move m, int color){
+  public void makeMove(Move m, int turn){
 	  /*
 	   * x1, y1 are the new position 
 	   */
 	  // ADD
-	  int chipValue = color== 1? WHITE:BLACK;
+	  int chipValue = turn == MachinePlayer.WHITE_FIRST? WHITE:BLACK;
 	  if(m.moveKind == 1){
 		  this.setElementAt(m.x1, m.y1, chipValue);
 	  // STEP
@@ -158,8 +158,7 @@ public class SimpleBoard {
    *  @param y is the y-index.
    *  @exception ArrayIndexOutOfBoundsException is thrown if an invalid index
    *  is given.
-   **/
-  
+   **/  
   public void setElementAt(int x, int y, int value) {
     grid[x][y] = value % 3;
     if (grid[x][y] < 0) {
@@ -243,7 +242,7 @@ public class SimpleBoard {
 	}
 
   public static void main(String[] args) {
-	    SimpleBoard board = new SimpleBoard();
+	  	SimpleBoard board = new SimpleBoard();
 //	    System.out.println("hash code of new board should be 0, is: "+board.hashCode());
 //	    board.setElementAt(7,7,2);
 //	    System.out.println("hash code of new board should be 2, is: "+board.hashCode());
