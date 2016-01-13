@@ -133,6 +133,7 @@ public class MachinePlayer extends Player {
   public void horizonCheck(Chip chip){
 	 int x = chip.getX();
 	 int y = chip.getY();
+	 int opponentValue = chip.getChipValue() 
 	 for(int i=x-1; i>=0; i--){
 		 if(this.board.elementAt(i, y)) 
 	 }
