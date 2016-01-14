@@ -464,8 +464,7 @@ public class MachinePlayer extends Player {
 //	  Connection conn = null;
 	  boolean goalChip = false;
 	  /* flag is the flag to tell when is to insert the path, like pop after push that should work*/
-	  boolean flag = false;
-	  boolean flag2 = false;
+	  boolean flag = true;
 	  int pathLength = 0;
 	  if(color == turn){
 		  paths = machinePaths;
@@ -484,7 +483,6 @@ public class MachinePlayer extends Player {
 	  path.insertBack(chip);
 	  try {
 		  while(!path.isEmpty()){
-			flag2 = false;
 			currentChip = (Chip)(path.back().item());
 			if(checkGoalArea(currentChip)){
 				goalChip = true;
