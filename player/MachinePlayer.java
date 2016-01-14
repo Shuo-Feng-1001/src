@@ -16,7 +16,7 @@ public class MachinePlayer extends Player {
   private int machineChipsNum;
   private int oppoChipsNum;
   private SimpleBoard board;
-  final private int color;
+  final private int turn;
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
@@ -33,30 +33,33 @@ public class MachinePlayer extends Player {
   private final static int WHITE = 1;
   private final static int EMPTY = 0;
   private final static int DIMENSION = 8;
+  
+  public final static int WHITE_FIRST = 1;
+  public final static int BLACK_SECOND = 0;
 
   
   
   
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
-  public MachinePlayer(int color) {
-	  this(color,2);
+  public MachinePlayer(int turn) {
+	  this(turn,2);
   }
  
   
   // Creates a machine player with the given color and search depth.  Color is
   // either 0 (black) or 1 (white).  (White has the first move.)
-  public MachinePlayer(int color, int searchDepth) {
-	  if(color == 0){
-		  this.myName = "BLACK";
+  public MachinePlayer(int turn, int searchDepth) {
+	  if(turn == 0){
+		  this.myName = "BLACK_SECOND";
 	  }else{
-		  this.myName = "WHITE";
+		  this.myName = "WHITE_FIRST";
 	  }
 	  machineChipsNum = 0;
 	  oppoChipsNum = 0;
 	  board = new SimpleBoard();
-	  this.color = color;
-	  opponent = (color+1) % 2;
+	  this.turn = turn;
+	  opponent = (turn + 1) % 2;
 	  machineChips = new Chip[10];
 	  opponentChips = new Chip[10];
 	  
@@ -110,9 +113,9 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-	if(board.isValidMove(m, color)){
-		this.board.makeMove(m, color);
-		Chip chip = new Chip(m,color);
+	if(board.isValidMove(m, turn)){
+		this.board.makeMove(m, turn);
+		Chip chip = new Chip(m, turn);
 		// ADD
 		if(m.moveKind == ADD){
 			this.machineChips[machineChipsNum] = chip;
@@ -120,7 +123,7 @@ public class MachinePlayer extends Player {
 		}
 		// STEP
 		if(m.moveKind == STEP){
-			Chip oldchip = new Chip(m.x2,m.y2,color);
+			Chip oldchip = new Chip(m.x2,m.y2,turn);
 			for(int i=0; i<machineChipsNum; i++){
 				if(machineChips[i].equals(oldchip)){
 					machineChips[i] = chip;
@@ -142,12 +145,19 @@ public class MachinePlayer extends Player {
 	 return neighbors;
 	 
   }
- 
+  
+ /**
+  * horizonCheck() checks the neighbor of the given chip 
+  * in the horizontal direction, and insert neighbors into
+  * the list
+  * @param chip :the given chip
+  * @param neighbors :the list to insert neighbors
+  */
   public void horizonCheck(Chip chip,List neighbors){
 	 int x = chip.getX();
 	 int y = chip.getY();
 
-	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
 	 boolean flag = true;
 	 for(int i=x-1; i>=0; i--){
 		 if(this.board.elementAt(i, y) == opponentValue ){
@@ -155,7 +165,8 @@ public class MachinePlayer extends Player {
 		 }
 		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
 			 chip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(chip);
+			 Chip neighborChip = new Chip(i,y,this.turn);
+			 neighbors.insertBack(neighborChip);
 		 }
 	 }
 	 flag = true;
@@ -165,14 +176,23 @@ public class MachinePlayer extends Player {
 		 }
 		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
 			 chip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(chip);
+			 Chip neighborChip = new Chip(i,y,this.turn);
+			 neighbors.insertBack(neighborChip);
 		 }
 	 }
   }
+  
+  /**
+   * vertiCheck() checks the neighbor of the given chip 
+   * in the vertical direction, and insert neighbors into
+   * the list
+   * @param chip :the given chip
+   * @param neighbors :the list to insert neighbors
+   */
   public void vertiCheck(Chip chip,List neighbors){
 	 int x = chip.getX();
 	 int y = chip.getY();
-	 int opponentValue = chip.getChipValue() == 1? 2:1;
+	 int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
 	 boolean flag = true;
 	 for(int i=y-1; i>=0; i--){
 		 if(this.board.elementAt(x,i) == opponentValue ){
@@ -180,7 +200,8 @@ public class MachinePlayer extends Player {
 		 }
 		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
 			 chip.setDirect(VERTICAL);
-			 neighbors.insertBack(chip);
+			 Chip neighborChip = new Chip(x,i,this.turn);
+			 neighbors.insertBack(neighborChip);
 		 }
 	 }
 	 flag = true;
@@ -190,64 +211,92 @@ public class MachinePlayer extends Player {
 		 }
 		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
 			 chip.setDirect(VERTICAL);
-			 neighbors.insertBack(chip);
+			 Chip neighborChip = new Chip(x,i,this.turn);
+			 neighbors.insertBack(neighborChip);
 		 }
 	 }
   }
+  
+  /**
+   * diagnfCheck() checks the neighbor of the given chip 
+   * in the diagonal direction, from up-left to bottom-right
+   * and insert neighbors into the list
+   * @param chip :the given chip
+   * @param neighbors :the list to insert neighbors
+   */
   public void diagnfCheck(Chip chip,List neighbors){
-	 int x = chip.getX();
-	 int y = chip.getY();
-	 int opponentValue = chip.getChipValue() == 1? 2:1;
-	 boolean flag = true;
-	 flag = true;
-	 for(int i=x-1; i>=0; i--){
-		 if(this.board.elementAt(i, y) == opponentValue ){
-			 flag = false;
+	  	int x = chip.getX();
+		 int y = chip.getY();
+		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
+		 boolean flag = true;
+		 int i = x,j = y;
+		 while(i > 0 && j > 0){
+			 i--;
+			 j--;
+			 if(this.board.elementAt(i, j) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
+				 chip.setDirect(DIAGONALF);
+				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighbors.insertBack(neighborChip);
+			 }
 		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 chip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(chip);
+		 flag = true;
+		 i = x;
+		 j = y;
+		 while(i < DIMENSION - 1&& j < DIMENSION - 1){
+			 i++;
+			 j++;
+			 if(this.board.elementAt(i, j) == opponentValue ){
+				 flag = false;
+			 }
+			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
+				 chip.setDirect(DIAGONALF);
+				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighbors.insertBack(neighborChip);
+			 }
 		 }
-	 }
-	 for(int i=x+1; i<8; i++){
-		 if(this.board.elementAt(i, y) == opponentValue ){
-			 flag = false;
-		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 chip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(chip);
-		 }
-	 }
   }
+  
+  /**
+   * diagnbCheck() checks the neighbor of the given chip 
+   * in the diagonal direction, from bottom-left to up-right
+   * and insert neighbors into the list
+   * @param chip :the given chip
+   * @param neighbors :the list to insert neighbors
+   */
   public void diagnbCheck(Chip chip, List neighbors){
 	  	int x = chip.getX();
 		 int y = chip.getY();
 		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
 		 boolean flag = true;
 		 int i = x,j = y;
-		 while(i < DIMENSION || j < DIMENSION){
+		 while(i < DIMENSION - 1&& j > 0){
 			 i++;
-			 j++;
+			 j--;
 			 if(this.board.elementAt(i, j) == opponentValue ){
 				 flag = false;
 			 }
-			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
 				 chip.setDirect(DIAGONALB);
-				 neighbors.insertBack(chip);
+				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighbors.insertBack(neighborChip);
 			 }
 		 }
 		 flag = true;
 		 i = x;
 		 j = y;
-		 while(i >= 0 || j >= 0){
+		 while(i > 0 && j < DIMENSION - 1){
 			 i--;
-			 j--;
-			 if(this.board.elementAt(i, y) == opponentValue ){
+			 j++;
+			 if(this.board.elementAt(i, j) == opponentValue ){
 				 flag = false;
 			 }
-			 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
 				 chip.setDirect(DIAGONALB);
-				 neighbors.insertBack(chip);
+				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighbors.insertBack(neighborChip);
 			 }
 		 }
   }
@@ -257,6 +306,117 @@ public class MachinePlayer extends Player {
     
   }
   
+  
+	public static void main(String[] args) {
+		List neighbor = new SList();
+		MachinePlayer p1 = new MachinePlayer(WHITE_FIRST);
+		p1.board.setElementAt(1, 1, WHITE);
+		p1.board.setElementAt(1, 2, WHITE);
+		p1.board.setElementAt(1, 3, WHITE);
+		System.out.println("now the board looks like:");
+		System.out.println(p1.board);
+		
+		Chip c1 = new Chip(1,1,WHITE_FIRST);
+		p1.vertiCheck(c1, neighbor);
+		System.out.println("check the vertical neighbors of (1,1):");
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (1,2) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		
+		System.out.println("");
+		System.out.println("check the vertical neighbors of (1,2):");
+		Chip c2 = new Chip(1,2,WHITE_FIRST);
+		neighbor = new SList();
+		p1.vertiCheck(c2, neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		p1.board.setElementAt(0, 1, WHITE);
+		p1.board.setElementAt(2, 1, WHITE);
+		p1.board.setElementAt(5, 1, WHITE);
+		p1.board.setElementAt(7, 1, WHITE);
+		System.out.println("now the board looks like:");
+		System.out.println(p1.board);
+		System.out.println("check the horizontal neighbors of (1,1):");
+		neighbor = new SList();
+		p1.horizonCheck(c1, neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (0,1) chip=o dir= visited? x  (2,1) chip=o dir= visited? x  (5,1) chip=o dir= visited? x  (7,1) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		p1.board.setElementAt(1, 6, BLACK);
+		p1.board.setElementAt(1, 7, WHITE);
+		p1.board.setElementAt(6, 1, BLACK);
+		p1.board.setElementAt(2, 3, BLACK);
+		p1.board.setElementAt(3, 4, WHITE);
+		System.out.println("now the board looks like:");
+		System.out.println(p1.board);
+		
+		System.out.println("check the horizontical neighbors of (1,1):");
+		neighbor = new SList();
+		p1.horizonCheck(c1, neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (0,1) chip=o dir= visited? x  (2,1) chip=o dir= visited? x  (5,1) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		System.out.println("check the veritical neighbors of (1,2):");
+		neighbor = new SList();
+		p1.vertiCheck(c2, neighbor);
+		System.out.println(neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		System.out.println("check the up-left to bottom-right neighbors of (1,2):");
+		neighbor = new SList();
+		p1.diagnfCheck(c2, neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (0,1) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		p1.board.setElementAt(2, 1, BLACK);
+		p1.board.setElementAt(3, 0, WHITE);
+		p1.board.setElementAt(0, 3, WHITE);
+		System.out.println("now the board looks like:");
+		System.out.println(p1.board);
+		
+		System.out.println("check the up-right to bottom-left neighbors of (1,2):");
+		neighbor = new SList();
+		p1.diagnbCheck(c2, neighbor);
+		System.out.println(neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (0,3) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		System.out.println("");
+		
+		System.out.println("check all neighbors of (1,2):");
+		System.out.println("order: | -- \\  /");
+		neighbor = new SList();
+		p1.vertiCheck(c2, neighbor);
+		p1.horizonCheck(c2, neighbor);
+		p1.diagnfCheck(c2, neighbor);
+		p1.diagnbCheck(c2, neighbor);
+		System.out.println("now the neighbor list should look like:");
+		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  (0,1) chip=o dir= visited? x  (0,3) chip=o dir= visited? x  ]");
+		System.out.println("and this is your neighbor list:");
+		System.out.println(neighbor);
+		
+		
+		
+	}
   
 
 }
