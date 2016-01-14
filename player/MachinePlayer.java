@@ -164,8 +164,8 @@ public class MachinePlayer extends Player {
 			 flag = false;
 		 }
 		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 chip.setDirect(HORIZONTAL);
 			 Chip neighborChip = new Chip(i,y,this.turn);
+			 neighborChip.setDirect(HORIZONTAL);
 			 neighbors.insertBack(neighborChip);
 		 }
 	 }
@@ -175,8 +175,8 @@ public class MachinePlayer extends Player {
 			 flag = false;
 		 }
 		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 chip.setDirect(HORIZONTAL);
 			 Chip neighborChip = new Chip(i,y,this.turn);
+			 neighborChip.setDirect(HORIZONTAL);
 			 neighbors.insertBack(neighborChip);
 		 }
 	 }
@@ -199,8 +199,9 @@ public class MachinePlayer extends Player {
 			 flag = false;
 		 }
 		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
-			 chip.setDirect(VERTICAL);
+			 
 			 Chip neighborChip = new Chip(x,i,this.turn);
+			 neighborChip.setDirect(VERTICAL);
 			 neighbors.insertBack(neighborChip);
 		 }
 	 }
@@ -210,8 +211,8 @@ public class MachinePlayer extends Player {
 			 flag = false;
 		 }
 		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
-			 chip.setDirect(VERTICAL);
 			 Chip neighborChip = new Chip(x,i,this.turn);
+			 neighborChip.setDirect(VERTICAL);
 			 neighbors.insertBack(neighborChip);
 		 }
 	 }
@@ -237,8 +238,8 @@ public class MachinePlayer extends Player {
 				 flag = false;
 			 }
 			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 chip.setDirect(DIAGONALF);
 				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighborChip.setDirect(DIAGONALF);
 				 neighbors.insertBack(neighborChip);
 			 }
 		 }
@@ -252,8 +253,8 @@ public class MachinePlayer extends Player {
 				 flag = false;
 			 }
 			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 chip.setDirect(DIAGONALF);
 				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighborChip.setDirect(DIAGONALF);
 				 neighbors.insertBack(neighborChip);
 			 }
 		 }
@@ -278,9 +279,9 @@ public class MachinePlayer extends Player {
 			 if(this.board.elementAt(i, j) == opponentValue ){
 				 flag = false;
 			 }
-			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 chip.setDirect(DIAGONALB);
+			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){				 
 				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighborChip.setDirect(DIAGONALB);
 				 neighbors.insertBack(neighborChip);
 			 }
 		 }
@@ -294,8 +295,8 @@ public class MachinePlayer extends Player {
 				 flag = false;
 			 }
 			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 chip.setDirect(DIAGONALB);
 				 Chip neighborChip = new Chip(i,j,this.turn);
+				 neighborChip.setDirect(DIAGONALB);
 				 neighbors.insertBack(neighborChip);
 			 }
 		 }
@@ -320,7 +321,7 @@ public class MachinePlayer extends Player {
 		p1.vertiCheck(c1, neighbor);
 		System.out.println("check the vertical neighbors of (1,1):");
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,2) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("[  (1,2) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		
@@ -330,7 +331,7 @@ public class MachinePlayer extends Player {
 		neighbor = new SList();
 		p1.vertiCheck(c2, neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -345,7 +346,7 @@ public class MachinePlayer extends Player {
 		neighbor = new SList();
 		p1.horizonCheck(c1, neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir= visited? x  (2,1) chip=o dir= visited? x  (5,1) chip=o dir= visited? x  (7,1) chip=o dir= visited? x  ]");
+		System.out.println("[  (0,1) chip=o dir=-- visited? x  (2,1) chip=o dir=-- visited? x  (5,1) chip=o dir=-- visited? x  (7,1) chip=o dir=-- visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -362,7 +363,7 @@ public class MachinePlayer extends Player {
 		neighbor = new SList();
 		p1.horizonCheck(c1, neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir= visited? x  (2,1) chip=o dir= visited? x  (5,1) chip=o dir= visited? x  ]");
+		System.out.println("[  (0,1) chip=o dir=-- visited? x  (2,1) chip=o dir=-- visited? x  (5,1) chip=o dir=-- visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -372,7 +373,7 @@ public class MachinePlayer extends Player {
 		p1.vertiCheck(c2, neighbor);
 		System.out.println(neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  ]");
+		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -381,7 +382,7 @@ public class MachinePlayer extends Player {
 		neighbor = new SList();
 		p1.diagnfCheck(c2, neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir= visited? x  ]");
+		System.out.println("[  (0,1) chip=o dir=\\ visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -397,7 +398,7 @@ public class MachinePlayer extends Player {
 		p1.diagnbCheck(c2, neighbor);
 		System.out.println(neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,3) chip=o dir= visited? x  ]");
+		System.out.println("[  (0,3) chip=o dir=/ visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		System.out.println("");
@@ -410,7 +411,7 @@ public class MachinePlayer extends Player {
 		p1.diagnfCheck(c2, neighbor);
 		p1.diagnbCheck(c2, neighbor);
 		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir= visited? x  (1,3) chip=o dir= visited? x  (0,1) chip=o dir= visited? x  (0,3) chip=o dir= visited? x  ]");
+		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  (0,1) chip=o dir=\\ visited? x  (0,3) chip=o dir=/ visited? x  ]");
 		System.out.println("and this is your neighbor list:");
 		System.out.println(neighbor);
 		

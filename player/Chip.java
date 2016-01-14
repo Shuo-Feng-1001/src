@@ -118,24 +118,24 @@ public class Chip {
 		return  "(" + x + "," + y + ")" + " chip=" + c + " " + "dir=" + d + " " + "visited? " + v;
 	}
 	
-//	public static void main(String[] args) {
-//		Chip c1 = new Chip();
-//		Chip c2 = new Chip(1,1,MachinePlayer.WHITE_FIRST);
-//		Chip c3 = new Chip(3,4,MachinePlayer.BLACK_SECOND);
-//		Chip c4 = new Chip(2,3,MachinePlayer.BLACK_SECOND);
-//		c4.setDirect(HORIZONTAL);
-//		Chip c5 = new Chip(6,6,MachinePlayer.BLACK_SECOND);
-//		c5.setDirect(VERTICAL);
-//		Chip c6 = new Chip(1,6,MachinePlayer.WHITE_FIRST);
-//		c6.setDirect(DIAGONALB);
-//		Chip c7 = new Chip(5,2,MachinePlayer.WHITE_FIRST);
-//		c7.setDirect(DIAGONALF);
-//		System.out.println(c1);
-//		System.out.println(c2);
-//		System.out.println(c3);
-//		System.out.println(c4);
-//		System.out.println(c5);
-//		System.out.println(c6);
-//		System.out.println(c7);		
-//	}
+	public static void main(String[] args) {
+		Chip c1 = new Chip();
+		Chip c2 = new Chip(1,1,MachinePlayer.WHITE_FIRST);
+		Chip c3 = new Chip(3,4,MachinePlayer.BLACK_SECOND);
+		Chip c4 = new Chip(2,3,MachinePlayer.BLACK_SECOND);
+		c4.setDirect(HORIZONTAL);
+		Chip c5 = new Chip(6,6,MachinePlayer.BLACK_SECOND);
+		c5.setDirect(VERTICAL);
+		Chip c6 = new Chip(1,6,MachinePlayer.WHITE_FIRST);
+		c6.setDirect(DIAGONALB);
+		Chip c7 = new Chip(5,2,MachinePlayer.WHITE_FIRST);
+		c7.setDirect(DIAGONALF);
+		System.out.println(c1);
+		System.out.println(c2);
+		System.out.println(c3);
+		System.out.println(c4);
+		System.out.println(c5);
+		System.out.println(c6);
+		System.out.println(c7);		
+	}
 }
