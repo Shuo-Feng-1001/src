@@ -2,7 +2,12 @@
 
 package player;
 
+
+import java.util.Random;
+
 import board.SimpleBoard;
+import list.DList;
+import list.InvalidNodeException;
 import list.List;
 import list.SList;
 
@@ -12,7 +17,6 @@ import list.SList;
  */
 public class MachinePlayer extends Player {
   public static int SEARCHDEPTH = 2;
-  private List list;
   private int machineChipsNum;
   private int oppoChipsNum;
   private SimpleBoard board;
@@ -20,6 +24,10 @@ public class MachinePlayer extends Player {
   final private int opponent;
   private Chip[] machineChips;
   private Chip[] opponentChips;
+  /*store the current potential networks*/
+  private List machinePaths;
+  private List opponentPaths;
+  
 
   public static final int ADD = 1;
   public static final int STEP = 2; 
@@ -136,26 +144,40 @@ public class MachinePlayer extends Player {
 	}   
   }
   
-  
-  public List findNeighbor(Chip chip){
-	 List neighbors = new SList();
-	 int flag = chip.getDirect();
-	 if(flag != HORIZONTAL){
-		 horizonCheck(chip,neighbors);
-	 }
-	 if(flag != VERTICAL){
-		 vertiCheck(chip,neighbors);
-	 }
-	 if(flag != DIAGONALF){
-		 diagnfCheck(chip,neighbors);
-	 }
-	 if(flag != DIAGONALB){
-		 diagnbCheck(chip,neighbors);
-	 }
-	 
-	 
-	 return neighbors;
-	 
+  /**
+   * findNeighbor() method is to find all of the given chip's neighbors
+   * (if the neighbor is legal)
+   * @param chip
+   * @return
+   */
+  public List findNeighbor(Chip chip, int color){
+    List neighbors = new SList();
+    int flag = chip.getDirect();
+    boolean blackGoalArea = false;
+    boolean whiteGoalArea = false;
+//    if(chip.getChipValue() == BLACK){
+//      if(chip.getY() == 0 || chip.getY() == DIMENSION-1){
+//    	  blackGoalArea = true;
+//      }
+//    }
+//    if(chip.getChipValue() == WHITE){
+//      if(chip.getX() == 0 || chip.getX() == DIMENSION-1){
+//        whiteGoalArea = true;
+//      }
+//    }
+    if(flag != HORIZONTAL && (!blackGoalArea)){
+      horizonCheck(chip,neighbors,color);
+    }
+    if(flag != VERTICAL && (!whiteGoalArea)){
+      vertiCheck(chip,neighbors,color);
+    }
+    if(flag != DIAGONALF){
+      diagnfCheck(chip,neighbors,color);
+    }
+    if(flag != DIAGONALB){
+      diagnbCheck(chip,neighbors,color);
+    }
+    return neighbors;
   }
   
  /**
@@ -165,33 +187,56 @@ public class MachinePlayer extends Player {
   * @param chip :the given chip
   * @param neighbors :the list to insert neighbors
   */
-  public void horizonCheck(Chip chip,List neighbors){
-	 int x = chip.getX();
-	 int y = chip.getY();
-
-	 int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
-	 boolean flag = true;
-	 for(int i=x-1; i>=0; i--){
-		 if(this.board.elementAt(i, y) == opponentValue ){
-			 flag = false;
-		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 Chip neighborChip = new Chip(i,y,this.turn);
-			 neighborChip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(neighborChip);
-		 }
-	 }
-	 flag = true;
-	 for(int i=x+1; i<8; i++){
-		 if(this.board.elementAt(i, y) == opponentValue ){
-			 flag = false;
-		 }
-		 if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
-			 Chip neighborChip = new Chip(i,y,this.turn);
-			 neighborChip.setDirect(HORIZONTAL);
-			 neighbors.insertBack(neighborChip);
-		 }
-	 }
+  public void horizonCheck(Chip chip,List neighbors,int color){
+  	int x = chip.getX();
+  	int y = chip.getY();
+  	Chip[] chips;
+  	if(color == turn){
+  	  chips = this.machineChips;
+  	}else{
+  	  chips = this.opponentChips;
+  	}
+    int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
+    boolean flag = true;
+    for(int i=x-1; i>=0; i--){
+  	  if(this.board.elementAt(i, y) == opponentValue ){
+  		 flag = false;
+  	  }
+  	  if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+  		  Chip neighborChip = null;
+  		  for(int k=0; k<chips.length;k++){
+          if(chips[k]!=null){
+            if(chips[k].getX() == i && chips[k].getY() == y && !chips[k].isVisited()){
+              neighborChip = chips[k];
+              neighborChip.setDirect(HORIZONTAL);
+              neighbors.insertBack(neighborChip);
+              break;
+            }
+          }
+  		  }
+  		  break;
+  	  }
+    }
+    flag = true;
+    for(int i=x+1; i<8; i++){
+  	  if(this.board.elementAt(i, y) == opponentValue ){
+        flag = false;
+  	  }
+  	  if(flag && this.board.elementAt(i, y) == chip.getChipValue()){
+        Chip neighborChip = null;
+        for(int k=0; k<chips.length;k++){
+          if(chips[k]!=null){
+            if(chips[k].getX() == i && chips[k].getY() == y && !chips[k].isVisited()){
+              neighborChip = chips[k];
+              neighborChip.setDirect(HORIZONTAL);
+              neighbors.insertBack(neighborChip);
+              break;
+            }
+          }
+        }
+        break;
+  	  }
+    }
   }
   
   /**
@@ -201,31 +246,54 @@ public class MachinePlayer extends Player {
    * @param chip :the given chip
    * @param neighbors :the list to insert neighbors
    */
-  public void vertiCheck(Chip chip,List neighbors){
-	 int x = chip.getX();
-	 int y = chip.getY();
-	 int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
-	 boolean flag = true;
-	 for(int i=y-1; i>=0; i--){
-		 if(this.board.elementAt(x,i) == opponentValue ){
-			 flag = false;
-		 }
-		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
-			 
-			 Chip neighborChip = new Chip(x,i,this.turn);
-			 neighborChip.setDirect(VERTICAL);
-			 neighbors.insertBack(neighborChip);
-		 }
+  public void vertiCheck(Chip chip,List neighbors,int color){
+    int x = chip.getX();
+    int y = chip.getY();
+    Chip[] chips;
+    if(color == turn){
+      chips = this.machineChips;
+    }else{
+      chips = this.opponentChips;
+    }
+    int opponentValue = chip.getChipValue() == WHITE? BLACK:WHITE;
+    boolean flag = true;
+    for(int i=y-1; i>=0; i--){
+    if(this.board.elementAt(x,i) == opponentValue ){
+     flag = false;
+    }
+    if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
+      Chip neighborChip = null;
+      for(int k=0; k<chips.length;k++){
+        if(chips[k]!=null){
+          if(chips[k].getX() == x && chips[k].getY() == i && !chips[k].isVisited()){
+            neighborChip = chips[k];
+            neighborChip.setDirect(VERTICAL);
+            neighbors.insertBack(neighborChip);
+            break;
+          }
+        }
+      }
+      break;
+    }
 	 }
 	 flag = true;
 	 for(int i=y+1; i<8; i++){
-		 if(this.board.elementAt(x,i) == opponentValue ){
-			 flag = false;
-		 }
-		 if(flag && this.board.elementAt(x, i) == chip.getChipValue()){
-			 Chip neighborChip = new Chip(x,i,this.turn);
-			 neighborChip.setDirect(VERTICAL);
-			 neighbors.insertBack(neighborChip);
+		  if(this.board.elementAt(x,i) == opponentValue ){
+        flag = false;
+		  }
+		 if(flag && this.board.elementAt(x, i) == chip.getChipValue() ){
+			  Chip neighborChip = null;
+        for(int k=0; k<chips.length;k++){
+          if(chips[k]!=null){
+            if(chips[k].getX() == x && chips[k].getY() == i && !chips[k].isVisited()){
+              neighborChip = chips[k];
+              neighborChip.setDirect(VERTICAL);
+              neighbors.insertBack(neighborChip);
+              break;
+            }
+          }
+        }
+        break;
 		 }
 	 }
   }
@@ -237,41 +305,64 @@ public class MachinePlayer extends Player {
    * @param chip :the given chip
    * @param neighbors :the list to insert neighbors
    */
-  public void diagnfCheck(Chip chip,List neighbors){
-	  	int x = chip.getX();
-		 int y = chip.getY();
-		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
-		 boolean flag = true;
-		 int i = x,j = y;
-		 while(i > 0 && j > 0){
-			 i--;
-			 j--;
-			 if(this.board.elementAt(i, j) == opponentValue ){
-				 flag = false;
-			 }
-			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 Chip neighborChip = new Chip(i,j,this.turn);
-				 neighborChip.setDirect(DIAGONALF);
-				 neighbors.insertBack(neighborChip);
-			 }
-		 }
-		 flag = true;
-		 i = x;
-		 j = y;
-		 while(i < DIMENSION - 1&& j < DIMENSION - 1){
-			 i++;
-			 j++;
-			 if(this.board.elementAt(i, j) == opponentValue ){
-				 flag = false;
-			 }
-			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 Chip neighborChip = new Chip(i,j,this.turn);
-				 neighborChip.setDirect(DIAGONALF);
-				 neighbors.insertBack(neighborChip);
-			 }
-		 }
+  public void diagnfCheck(Chip chip,List neighbors,int color){
+    int x = chip.getX();
+  	int y = chip.getY();
+  	Chip[] chips;
+  	if(color == turn){
+  		chips = this.machineChips;
+  	}else{
+  		chips = this.opponentChips;
+  	}
+  	int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
+  	boolean flag = true;
+  	int i = x,j = y;
+  	while(i > 0 && j > 0){
+  		i--;
+  		j--;
+  		if(this.board.elementAt(i, j) == opponentValue ){
+  			flag = false;
+  		}
+  		if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
+  			Chip neighborChip = null;
+          for(int k=0; k<chips.length;k++){
+            if(chips[k]!=null){
+              if(chips[k].getX() == i && chips[k].getY() == j && !chips[k].isVisited()){
+                neighborChip = chips[k];
+                neighborChip.setDirect(DIAGONALF);
+                neighbors.insertBack(neighborChip);
+                break;
+              }
+            }
+          }
+  		  break;
+  		}
+  	}
+  	flag = true;
+  	i = x;
+  	j = y;
+  	while(i < DIMENSION - 1&& j < DIMENSION - 1){
+  		i++;
+  		j++;
+  		if(this.board.elementAt(i, j) == opponentValue ){
+  			flag = false;
+  		}
+  		if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
+  			Chip neighborChip = null;
+  			for(int k=0; k<chips.length;k++){
+  				if(chips[k]!=null){
+            if(chips[k].getX() == i && chips[k].getY() == j && !chips[k].isVisited()){
+    					neighborChip = chips[k];
+    					neighborChip.setDirect(DIAGONALF);
+    					neighbors.insertBack(neighborChip);
+    					break;
+    				}
+          }
+  			}
+  			break;
+  		}
+  	}
   }
-
   
   /**
    * diagnbCheck() checks the neighbor of the given chip 
@@ -280,154 +371,190 @@ public class MachinePlayer extends Player {
    * @param chip :the given chip
    * @param neighbors :the list to insert neighbors
    */
-  public void diagnbCheck(Chip chip, List neighbors){
-	  	 int x = chip.getX();
-		 int y = chip.getY();
-		 int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
-		 boolean flag = true;
-		 int i = x,j = y;
-		 while(i < DIMENSION - 1&& j > 0){
-			 i++;
-			 j--;
-			 if(this.board.elementAt(i, j) == opponentValue ){
-				 flag = false;
-			 }
-			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){				 
-				 Chip neighborChip = new Chip(i,j,this.turn);
-				 neighborChip.setDirect(DIAGONALB);
-				 neighbors.insertBack(neighborChip);
+  public void diagnbCheck(Chip chip, List neighbors, int color){
+    int x = chip.getX();
+    int y = chip.getY();
+    Chip[] chips;
+    if(color == turn){
+      chips = this.machineChips;
+    }else{
+      chips = this.opponentChips;
+    }
+    int opponentValue = chip.getChipValue() == WHITE? BLACK : WHITE;
+    boolean flag = true;
+    int i = x,j = y;
+    while(i < DIMENSION - 1&& j > 0){
+      i++;
+      j--;
+      if(this.board.elementAt(i, j) == opponentValue ){
+        flag = false;
+      }
+      if(flag && this.board.elementAt(i, j) == chip.getChipValue()){				 
+        Chip neighborChip = null;
+        for(int k=0; k<chips.length;k++){
+          if(chips[k]!=null){
+            if(chips[k].getX() == i && chips[k].getY() == j && !chips[k].isVisited()){
+              neighborChip = chips[k];
+              neighborChip.setDirect(DIAGONALB);
+              neighbors.insertBack(neighborChip);
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+    flag = true;
+    i = x;
+    j = y;
+    while(i > 0 && j < DIMENSION - 1){
+      i--;
+      j++;
+      if(this.board.elementAt(i, j) == opponentValue ){
+        flag = false;
+      }
+      if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
+        Chip neighborChip = null;
+        for(int k=0; k<chips.length;k++){
+          if(chips[k]!=null){
+            if(chips[k].getX() == i && chips[k].getY() == j && !chips[k].isVisited()){
+              neighborChip = chips[k];
+              neighborChip.setDirect(DIAGONALB);
+              neighbors.insertBack(neighborChip);
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  
+  public boolean checkGoalArea(Chip chip){  
+	  if(chip.getChipValue() == BLACK){
+			 if(chip.getY() == 0 || chip.getY() == DIMENSION-1){
+				 return true;
 			 }
 		 }
-		 flag = true;
-		 i = x;
-		 j = y;
-		 while(i > 0 && j < DIMENSION - 1){
-			 i--;
-			 j++;
-			 if(this.board.elementAt(i, j) == opponentValue ){
-				 flag = false;
-			 }
-			 if(flag && this.board.elementAt(i, j) == chip.getChipValue()){
-				 Chip neighborChip = new Chip(i,j,this.turn);
-				 neighborChip.setDirect(DIAGONALB);
-				 neighbors.insertBack(neighborChip);
+		 if(chip.getChipValue() == WHITE){
+			 if(chip.getX() == 0 || chip.getX() == DIMENSION-1){
+				 return true;
 			 }
 		 }
+	  return false;
   }
-
-  public Connection findNetwork(){
-    return null;
-    
+  /**
+   * findPath() is the method to find all of the potential network given the 
+   * specific chip
+   * 
+   * @param chip
+   */
+  public void findPath(int color, Chip chip){
+	  /* path store one possible path */
+	  List path = new SList();
+	  SList finalPath = new SList();
+	  /* paths store all possible paths of given chips*/
+	  List paths = null;
+	  /* store each players chips which has already placed on the board*/
+	  Chip[] chips = null;
+	  /* store the given chip's neighbors*/
+	  List neighbors = null;
+	  Chip currentChip = null;
+	  Chip neighChip = null;
+//	  Connection conn = null;
+	  boolean goalChip = false;
+	  /* flag is the flag to tell when is to insert the path, like pop after push that should work*/
+	  boolean flag = false;
+	  boolean flag2 = false;
+	  int pathLength = 0;
+	  if(color == turn){
+		  paths = machinePaths;
+		  chips = this.machineChips;
+	  }else if(color == opponent){
+		  paths = opponentPaths; 
+		  chips = this.opponentChips;
+	  }
+	  for(Chip curr : chips){
+		  if(curr!=null){
+			  curr.setVisited(false);
+		  }
+	  }	  
+	  // -----------using stack-like method to find the path-------------
+	  chip.setVisited(true);
+	  path.insertBack(chip);
+	  try {
+		  while(!path.isEmpty()){
+			flag2 = false;
+			currentChip = (Chip)(path.back().item());
+			if(checkGoalArea(currentChip)){
+				goalChip = true;
+			}
+			neighbors = findNeighbor(currentChip,color);
+			if(!neighbors.isEmpty()){
+				neighChip = (Chip) ((SList)neighbors).pop();
+				if(checkGoalArea(neighChip)){
+					goalChip = true;
+				}
+				neighChip.setVisited(true);
+				path.insertBack(neighChip);
+				flag = true;
+			}else{
+				if(flag){
+					if(goalChip || (path.length() > pathLength)){
+						pathLength = path.length();
+						finalPath = ((SList)path).Clone();
+						paths.insertBack(finalPath);
+						goalChip = false;
+					}
+				}
+				((SList)path).pop();
+				flag = false;
+			}	
+		  }
+	  }catch (InvalidNodeException e) {
+		  e.printStackTrace();
+	  }
+	  
+	 
   }
+  
+  public void findPaths(int color){
+	  /*empty the current paths list*/
+	  if(color == turn){
+		  machinePaths = new DList();
+	  }else if(color == opponent){
+		  opponentPaths = new DList(); 
+	  }
+	  
+	  
+  }
+  
+  
+  
   
   
 	public static void main(String[] args) {
-		List neighbor = new SList();
-		MachinePlayer p1 = new MachinePlayer(WHITE_FIRST);
-		p1.board.setElementAt(1, 1, WHITE);
-		p1.board.setElementAt(1, 2, WHITE);
-		p1.board.setElementAt(1, 3, WHITE);
-		System.out.println("now the board looks like:");
-		System.out.println(p1.board);
-		
-		Chip c1 = new Chip(1,1,WHITE_FIRST);
-		p1.vertiCheck(c1, neighbor);
-		System.out.println("check the vertical neighbors of (1,1):");
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,2) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		
-		System.out.println("");
-		System.out.println("check the vertical neighbors of (1,2):");
-		Chip c2 = new Chip(1,2,WHITE_FIRST);
-		neighbor = new SList();
-		p1.vertiCheck(c2, neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		p1.board.setElementAt(0, 1, WHITE);
-		p1.board.setElementAt(2, 1, WHITE);
-		p1.board.setElementAt(5, 1, WHITE);
-		p1.board.setElementAt(7, 1, WHITE);
-		System.out.println("now the board looks like:");
-		System.out.println(p1.board);
-		System.out.println("check the horizontal neighbors of (1,1):");
-		neighbor = new SList();
-		p1.horizonCheck(c1, neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir=-- visited? x  (2,1) chip=o dir=-- visited? x  (5,1) chip=o dir=-- visited? x  (7,1) chip=o dir=-- visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		p1.board.setElementAt(1, 6, BLACK);
-		p1.board.setElementAt(1, 7, WHITE);
-		p1.board.setElementAt(6, 1, BLACK);
-		p1.board.setElementAt(2, 3, BLACK);
-		p1.board.setElementAt(3, 4, WHITE);
-		System.out.println("now the board looks like:");
-		System.out.println(p1.board);
-		
-		System.out.println("check the horizontical neighbors of (1,1):");
-		neighbor = new SList();
-		p1.horizonCheck(c1, neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir=-- visited? x  (2,1) chip=o dir=-- visited? x  (5,1) chip=o dir=-- visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		System.out.println("check the veritical neighbors of (1,2):");
-		neighbor = new SList();
-		p1.vertiCheck(c2, neighbor);
-		System.out.println(neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		System.out.println("check the up-left to bottom-right neighbors of (1,2):");
-		neighbor = new SList();
-		p1.diagnfCheck(c2, neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,1) chip=o dir=\\ visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		p1.board.setElementAt(2, 1, BLACK);
-		p1.board.setElementAt(3, 0, WHITE);
-		p1.board.setElementAt(0, 3, WHITE);
-		System.out.println("now the board looks like:");
-		System.out.println(p1.board);
-		
-		System.out.println("check the up-right to bottom-left neighbors of (1,2):");
-		neighbor = new SList();
-		p1.diagnbCheck(c2, neighbor);
-		System.out.println(neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (0,3) chip=o dir=/ visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		System.out.println("");
-		
-		System.out.println("check all neighbors of (1,2):");
-		System.out.println("order: | -- \\  /");
-		neighbor = new SList();
-		p1.vertiCheck(c2, neighbor);
-		p1.horizonCheck(c2, neighbor);
-		p1.diagnfCheck(c2, neighbor);
-		p1.diagnbCheck(c2, neighbor);
-		System.out.println("now the neighbor list should look like:");
-		System.out.println("[  (1,1) chip=o dir=| visited? x  (1,3) chip=o dir=| visited? x  (0,1) chip=o dir=\\ visited? x  (0,3) chip=o dir=/ visited? x  ]");
-		System.out.println("and this is your neighbor list:");
-		System.out.println(neighbor);
-		
+		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
+		System.out.println(player.board);
+		Move m = null; 
+		Move m2 = null;
+		Random random = new Random();
+		for(int i = 0; i< 13; i++){
+			m = new Move(random.nextInt(8),random.nextInt(8));
+			m2 = new Move(random.nextInt(8),random.nextInt(8));
+			player.forceMove(m);
+			player.opponentMove(m2);
+		}
+		System.out.println(player.board);
+		System.out.println("machine chips number: " + player.machineChipsNum);
+		System.out.println("opponent chips number: " + player.oppoChipsNum);
+		System.out.println("chip x position: " + player.machineChips[0].getX() + " chip y position: " + player.machineChips[0].getY());
+		List list = player.findNeighbor(player.machineChips[0], player.turn);
+		System.out.println(list);
+		player.machinePaths = new SList();
+		player.findPath(player.turn, player.machineChips[0]);
+		System.out.println("paths: " + player.machinePaths);
+		System.out.println("pathsLength: " + player.machinePaths.length() );
 		
 		
 	}

@@ -1,28 +1,30 @@
 package player;
 
+import list.List;
+
 public class Connection {
-	private int connectedNum;
-	private boolean isEnd;
+	private List path;
+	private boolean hasGoal;
 	public Connection() {
-		this.connectedNum = 0;
-		this.isEnd = false;
+		this.path = null;
+		this.hasGoal = false;
 	}
-	public Connection(int connectedNum, boolean isEnd) {
-		this.connectedNum = connectedNum;
-		this.isEnd = isEnd;
+	public Connection(List path, boolean hasGoal) {
+		this.path = path;
+		this.hasGoal = hasGoal;
 	}
 	
-	public int getConnectedNum() {
-		return connectedNum;
+	public List getpath() {
+		return path;
 	}
-	public void setConnectedNum(int connectedNum) {
-		this.connectedNum = connectedNum;
+	public void setpath(List path) {
+		this.path = path;
 	}
 	public boolean isEnd() {
-		return isEnd;
+		return hasGoal;
 	}
-	public void setEnd(boolean isEnd) {
-		this.isEnd = isEnd;
+	public void setEnd(boolean hasGoal) {
+		this.hasGoal = hasGoal;
 	}
 	
 
