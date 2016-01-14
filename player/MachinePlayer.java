@@ -519,11 +519,21 @@ public class MachinePlayer extends Player {
   }
   
   public void findPaths(int color){
+	  Chip[] chips = null;
 	  /*empty the current paths list*/
 	  if(color == turn){
 		  machinePaths = new DList();
+		  chips = this.machineChips;
 	  }else if(color == opponent){
 		  opponentPaths = new DList(); 
+		  chips = this.opponentChips;
+	  }
+	  for(Chip chip : chips){
+		  if(chip != null){
+			  chip.setDirect(0);
+			  System.out.println(chip);
+			  this.findPath(color, chip);
+		  }
 	  }
 	  
 	  
@@ -538,44 +548,54 @@ public class MachinePlayer extends Player {
 		System.out.println(player.board);
 		Move m = null; 
 		Move m2 = null;
-//		Random random = new Random();
-//		for(int i = 0; i< 13; i++){
+		Random random = new Random();
+//		for(int i = 0; i< 10; i++){
 //			m = new Move(random.nextInt(8),random.nextInt(8));
 //			m2 = new Move(random.nextInt(8),random.nextInt(8));
 //			player.forceMove(m);
 //			player.opponentMove(m2);
 //		}
-		
-		m = new Move(0,6);
+		m = new Move(0,3);
 		player.forceMove(m);
-		m = new Move(1,6);
+		m = new Move(6,3);
 		player.forceMove(m);
-		m = new Move(3,5);
+		m = new Move(6,4);
 		player.forceMove(m);
-		m = new Move(4,1);
+		m = new Move(7,1);
 		player.forceMove(m);
-		m = new Move(4,3);
-		player.forceMove(m);
-		m2 = new Move(3,6);
+//		m = new Move(4,1);
+//		player.forceMove(m);
+//		m = new Move(4,3);
+//		player.forceMove(m);
+		m2 = new Move(2,1);
 		player.opponentMove(m2);
-		m2 = new Move(3,7);
+		m2 = new Move(3,1);
 		player.opponentMove(m2);
 		m2 = new Move(5,2);
 		player.opponentMove(m2);
-		m2 = new Move(6,2);
+		m2 = new Move(5,3);
 		player.opponentMove(m2);
+		m2 = new Move(5,5);
+		player.opponentMove(m2);
+		m2 = new Move(1,7);
+		player.opponentMove(m2);
+		m2 = new Move(2,4);
+		player.opponentMove(m2);
+		
 		
 		System.out.println(player.board);
 		System.out.println("machine chips number: " + player.machineChipsNum);
 		System.out.println("opponent chips number: " + player.oppoChipsNum);
-		System.out.println("chip x position: " + player.machineChips[4].getX() + " chip y position: " + player.machineChips[4].getY());
-		List list = player.findNeighbor(player.machineChips[4], player.turn);
-		System.out.println(list);
-		player.machinePaths = new SList();
-		player.findPath(player.turn, player.machineChips[4]);
-		System.out.println("paths: " + player.machinePaths);
-		System.out.println("pathsLength: " + player.machinePaths.length() );
-		
+//		System.out.println("chip x position: " + player.machineChips[0].getX() + " chip y position: " + player.machineChips[0].getY());
+//		List list = player.findNeighbor(player.machineChips[5], player.turn);
+//		System.out.println(list);
+//		player.machinePaths = new SList();
+//		player.findPath(player.turn, player.machineChips[5]);
+//		System.out.println("paths: " + player.machinePaths);
+//		System.out.println("pathsLength: " + player.machinePaths.length() );
+		player.findPaths(player.turn);
+		System.out.println("paths:" + player.machinePaths);
+		System.out.println("pathsLength:" + player.machinePaths.length());
 		
 	}
   
