@@ -152,19 +152,19 @@ public class MachinePlayer extends Player {
 		  // Set the score to be current score, no extra move
 		  myBest.score = c.getScore();
 		  //Adjust the score according to winning chance and current depth
-		  if(myBest.score > 0){
-			  if(myBest.score - 5 * searchDepth > 0){
-				  myBest.score  -= 5 * searchDepth;
-			  } else{
-				  myBest.score = 5;
-			  }
-		  } else if(myBest.score < 0){
-			  if(myBest.score + 5 * searchDepth < 0){
-				  myBest.score  += 5 * searchDepth;
-			  } else{
-				  myBest.score = -5;
-			  }
-		  }
+//		  if(myBest.score > 0){
+//			  if(myBest.score - 5 * searchDepth > 0){
+//				  myBest.score  -= 5 * searchDepth;
+//			  } else{
+//				  myBest.score = 5;
+//			  }
+//		  } else if(myBest.score < 0){
+//			  if(myBest.score + 5 * searchDepth < 0){
+//				  myBest.score  += 5 * searchDepth;
+//			  } else{
+//				  myBest.score = -5;
+//			  }
+//		  }
 //		  System.out.println("Search ends here and I would return!");
 		  return myBest;
 	  }
