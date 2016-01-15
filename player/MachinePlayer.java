@@ -71,8 +71,8 @@ public class MachinePlayer extends Player {
   }
 
   
-  public MachinePlayer Clone(){
-	  MachinePlayer player = new MachinePlayer(this.turn,this.SEARCHDEPTH);
+  public MachinePlayer clone(){
+	  MachinePlayer player = new MachinePlayer(this.turn,MachinePlayer.SEARCHDEPTH);
 	  player.board = this.board.clone();
 	  player.machineChipsNum = this.machineChipsNum;
 	  player.oppoChipsNum = this.oppoChipsNum;
@@ -88,13 +88,7 @@ public class MachinePlayer extends Player {
 	  return player;
   }
   
-  
-  
-  
-  
-  
-  
-  
+
   public SimpleBoard getBoard(){
 	  return board;
   }
@@ -130,18 +124,28 @@ public class MachinePlayer extends Player {
   
   public BestMove abtree(int alpha,int beta,int searchDepth,SimpleBoard board,int turn){
 	  
+	  
 	  BestMove myBest = new BestMove();
 	  BestMove reply;
+	  
+//	  System.out.println("Hi I'm in the depth:" + searchDepth);
+	  
+	  this.findPaths(turn);
+	  
+//	  System.out.println("I found all paths!"); 
 	  
 	  Connection c = new Connection();
 	  //Compute the score of current board, as well as check if game ends
 	  this.findPaths(turn);
 	  c = this.checkPaths(turn);
+	  
+//	  System.out.println("I checked all paths!");
+	  
 	  //If the game ends, or comes to the specified SEARCHDEPTH
-	  if(c.isEnd()||searchDepth == this.SEARCHDEPTH){
+	  if(c.isEnd() || searchDepth == MachinePlayer.SEARCHDEPTH){
 		  // Set the score to be current score, no extra move
 		  myBest.score = c.getScore();
-		  //Adjust the score according to the turn and the current depth
+		  //Adjust the score according to winning chance and current depth
 		  if(myBest.score > 0){
 			  if(myBest.score - 5 * searchDepth > 0){
 				  myBest.score  -= 5 * searchDepth;
@@ -155,6 +159,7 @@ public class MachinePlayer extends Player {
 				  myBest.score = -5;
 			  }
 		  }
+//		  System.out.println("Search ends here and I would return!");
 		  return myBest;
 	  }
 	  
@@ -163,14 +168,14 @@ public class MachinePlayer extends Player {
 	  } else{
 		  myBest.score = beta;
 	  }
-	//find all legal moves
+	  //find all legal moves
 	  Move[] moves = this.findAllMoves(turn);
 	  myBest.move = moves[0];
 	  //for each legal move
 	  for(Move m: moves){
 		  if(m != null){
 			  //record the current board
-			  MachinePlayer player = this.Clone();
+			  MachinePlayer player = this.clone();
 			//perform move m
 			  if(turn == player.turn){
 				  player.forceMove(m);
@@ -183,7 +188,6 @@ public class MachinePlayer extends Player {
 			  //recursively call abtree for the next turn
 			  reply = player.abtree(alpha,beta,searchDepth + 1,player.board,nextTurn);
 			  //undo move m
-			  
 			  //If this turn is myTurn
 			  if((turn == this.turn)&&(reply.score > myBest.score)){
 				  myBest.move = m;
@@ -202,7 +206,6 @@ public class MachinePlayer extends Player {
 			  }
 		  }
 	  }
-	  //actually not reachable, just for convincing compiler of eclipse
 	  return myBest;
   }
   
@@ -835,6 +838,7 @@ public class MachinePlayer extends Player {
 		Move m2 = null;
 //		Random random = new Random();
 //		while(player.machineChipsNum<10){
+
 //			m = new Move(random.nextInt(8),random.nextInt(8));
 //			m2 = new Move(random.nextInt(8),random.nextInt(8));
 //			player.forceMove(m);
@@ -897,6 +901,7 @@ public class MachinePlayer extends Player {
 		System.out.println(m2);
 		
 		
+
 //		System.out.println("chip x position: " + player.machineChips[0].getX() + " chip y position: " + player.machineChips[0].getY());
 //		List list = player.findNeighbor(player.machineChips[5], player.turn);
 //		System.out.println(list);
@@ -923,13 +928,7 @@ public class MachinePlayer extends Player {
 //		}
 //		
 //		//----------------------------
-//		MachinePlayer player1 = new MachinePlayer(WHITE_FIRST);
-//		Move move22 = player1.chooseMove();
-//		System.out.println("first: " + move22);
-//		m = new Move(2,2);
-//		player1.opponentMove(m);
-//		move22 = player1.chooseMove();
-//		System.out.println("second: " + move22);
+//	
 	}
 
 }
