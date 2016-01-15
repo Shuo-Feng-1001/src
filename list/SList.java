@@ -125,6 +125,34 @@ public class SList extends List {
     }
   }
 
+  
+  public Object pop(){
+	  ListNode node = this.back();
+	  Object item = node.item;
+	  try {
+		node.remove();
+	  } catch (InvalidNodeException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	  }
+	  return item;
+  }
+  /**
+   * Clone() method is to copy the given list to the new list
+   * @param list
+   * @return
+   */
+  public SList Clone(){
+	  SList newList = new SList();
+	  SListNode curr = head;
+	  while(curr!=null){
+		  newList.insertBack(curr.item);
+		  curr = curr.next;
+	  }
+	  return newList;
+  }
+  
+  
   /**
    *  toString() returns a String representation of this SList.
    *
@@ -257,5 +285,16 @@ public class SList extends List {
                           );
       System.err.println ("Aborting the testing code.");
     }
+    
+    List testPop = new SList();
+    testPop.insertBack(1);
+    testPop.insertBack(2);
+    System.out.println(testPop);
+    int pop = (int) ((SList)testPop).pop();
+    System.out.println(pop);
+    System.out.println(testPop);
+    System.out.println(testPop.size);
+    
+    
   }
 }
