@@ -71,6 +71,23 @@ public class MachinePlayer extends Player {
   }
 
   
+  public MachinePlayer clone(){
+	  MachinePlayer player = new MachinePlayer(this.turn,MachinePlayer.SEARCHDEPTH);
+	  player.board = this.board.clone();
+	  player.machineChipsNum = this.machineChipsNum;
+	  player.oppoChipsNum = this.oppoChipsNum;
+	  player.myName = this.myName;
+	  Chip[] machineChips = player.machineChips;
+	  Chip[] opponentChips = player.opponentChips;
+	  for(int i=0; i<this.machineChipsNum;i++){
+		  machineChips[i] = this.machineChips[i]; 
+	  }
+	  for(int i=0; i<this.oppoChipsNum;i++){
+		  opponentChips[i] = this.opponentChips[i];
+	  }	  
+	  return player;
+  }
+  
   public SimpleBoard getBoard(){
 	  return board;
   }
@@ -79,8 +96,18 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-	BestMove bestMove = abtree(Integer.MIN_VALUE,Integer.MAX_VALUE,0,this.board,this.turn);
-	Move m = bestMove.move;
+	Move m = null;
+	if(machineChipsNum == 0){
+		Random random = new Random();
+		if(this.turn == WHITE_FIRST){
+			m = new Move(0,random.nextInt(6)+1);
+		} else{
+			m = new Move(random.nextInt(6)+1,0);
+		}
+	} else{
+		BestMove bestMove = abtree(Integer.MIN_VALUE,Integer.MAX_VALUE,0,this.board,this.turn);
+		m = bestMove.move;
+	}
 	if(this.forceMove(m)){	
 		return m;
 	}
@@ -98,22 +125,41 @@ public class MachinePlayer extends Player {
   
   public BestMove abtree(int alpha,int beta,int searchDepth,SimpleBoard board,int turn){
 	  
+	  
 	  BestMove myBest = new BestMove();
 	  BestMove reply;
+	  
+//	  System.out.println("Hi I'm in the depth:" + searchDepth);
+	  
+	  this.findPaths(turn);
+	  
+//	  System.out.println("I found all paths!"); 
 	  
 	  Connection c = new Connection();
 	  //Compute the score of current board, as well as check if game ends
 	  c = this.checkPaths(turn);
+	  
+//	  System.out.println("I checked all paths!");
+	  
 	  //If the game ends, or comes to the specified SEARCHDEPTH
-	  if(c.isEnd()||searchDepth == this.SEARCHDEPTH){
+	  if(c.isEnd() || searchDepth == MachinePlayer.SEARCHDEPTH){
 		  // Set the score to be current score, no extra move
 		  myBest.score = c.getScore();
-		  //Adjust the score according to the turn and the current depth
-		  if(turn == this.turn){
-			  myBest.score  -= 5 * searchDepth;
-		  } else{
-			  myBest.score  += 5 * searchDepth;
+		  //Adjust the score according to winning chance and current depth
+		  if(myBest.score > 0){
+			  if(myBest.score - 5 * searchDepth > 0){
+				  myBest.score  -= 5 * searchDepth;
+			  } else{
+				  myBest.score = 5;
+			  }
+		  } else if(myBest.score < 0){
+			  if(myBest.score + 5 * searchDepth < 0){
+				  myBest.score  += 5 * searchDepth;
+			  } else{
+				  myBest.score = -5;
+			  }
 		  }
+//		  System.out.println("Search ends here and I would return!");
 		  return myBest;
 	  }
 	  
@@ -122,36 +168,44 @@ public class MachinePlayer extends Player {
 	  } else{
 		  myBest.score = beta;
 	  }
-	//find all legal moves
+	  //find all legal moves
 	  Move[] moves = this.findAllMoves(turn);
+	  myBest.move = moves[0];
 	  
 	  //for each legal move
 	  for(Move m: moves){
-		  //record the current board
-		  SimpleBoard oldBoard = board;
-		  //perform move m
-		  this.forceMove(m);
-		  //change the turn
-		  int nextTurn = turn == this.turn? this.turn: (this.turn + 1)%2;
-		  //recursively call abtree for the next turn
-		  reply = abtree(alpha,beta,searchDepth + 1,board,nextTurn);
-		  //undo move m
-		  board = oldBoard;
-		  //If this turn is myTurn
-		  if((turn == this.turn)&&(reply.score > myBest.score)){
-			  myBest.move = m;
-			  myBest.score = reply.score;
-			  alpha = reply.score;
-		  }
-		  //If this turn is opponent's turn
-		  else if(turn == (this.turn + 1)%2 && reply.score < myBest.score){
-			  myBest.move = m;
-			  myBest.score = reply.score;
-			  beta = reply.score;
-		  }
-		  //alpha - beta pruning
-		  if(alpha >= beta){
-			  return myBest;
+		  if(m!= null){
+			  //record the current board
+			  MachinePlayer player = this.clone();
+			  //perform move m
+			  if(turn == this.turn){
+				  player.forceMove(m);
+			  }
+			  else if(turn == this.opponent){
+				  player.opponentMove(m);
+			  }
+			  //change the turn
+			  int nextTurn = turn == this.turn? this.opponent: this.turn;
+			  //recursively call abtree for the next turn
+			  reply = player.abtree(alpha,beta,searchDepth + 1,player.board,nextTurn);
+	//		  //undo move m
+	//		  thisPlayer = oldPlayer;
+			  //If this turn is myTurn
+			  if((turn == this.turn)&&(reply.score > myBest.score)){
+				  myBest.move = m;
+				  myBest.score = reply.score;
+				  alpha = reply.score;
+			  }
+			  //If this turn is opponent's turn
+			  else if(turn == this.opponent && reply.score < myBest.score){
+				  myBest.move = m;
+				  myBest.score = reply.score;
+				  beta = reply.score;
+			  }
+			  //alpha - beta pruning
+			  if(alpha >= beta){
+				  return myBest;
+			  }
 		  }
 	  }
 	  return myBest;
@@ -197,7 +251,8 @@ public class MachinePlayer extends Player {
     		if(this.machineChipsNum == 10){
     			for(int i= 0; i<10; i++){
     				for (int j = 0; j < 8; j++) {
-    					move = new Move(this.machineChips[i].getX()+direction[i][0],this.machineChips[i].getY()+direction[i][1],this.machineChips[i].getX(),this.machineChips[i].getY());
+    					move = new Move(this.machineChips[j].getX()+direction[j][0],this.machineChips[j].getY()+direction[j][1],this.machineChips[j].getX(),this.machineChips[j].getY());
+    					move.moveKind = Move.STEP;
     					if(this.board.isValidMove(move, turn)){
     						moves[count] = move;
     	    				count++;
@@ -213,7 +268,8 @@ public class MachinePlayer extends Player {
     		if(this.oppoChipsNum == 10){
     			for(int i= 0; i<10; i++){
     				for (int j = 0; j < 8; j++) {
-    					move = new Move(this.opponentChips[i].getX()+direction[i][0],this.opponentChips[i].getY()+direction[i][1],this.opponentChips[i].getX(),this.opponentChips[i].getY());
+    					move = new Move(this.opponentChips[j].getX()+direction[j][0],this.opponentChips[j].getY()+direction[j][1],this.opponentChips[j].getX(),this.opponentChips[j].getY());
+    					move.moveKind = Move.STEP;
     					if(this.board.isValidMove(move, turn)){
     						moves[count] = move;
     	    				count++;
@@ -907,17 +963,17 @@ public class MachinePlayer extends Player {
 //		System.out.println("");
 	
 
-		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
-		System.out.println(player.board);
-		Move m = null; 
-		Move m2 = null;
-		Random random = new Random();
-		for(int i = 0; i< 10; i++){
-			m = new Move(random.nextInt(8),random.nextInt(8));
-			m2 = new Move(random.nextInt(8),random.nextInt(8));
-			player.forceMove(m);
-			player.opponentMove(m2);
-		}
+//		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
+//		System.out.println(player.board);
+//		Move m = null; 
+//		Move m2 = null;
+//		Random random = new Random();
+//		for(int i = 0; i< 10; i++){
+//			m = new Move(random.nextInt(8),random.nextInt(8));
+//			m2 = new Move(random.nextInt(8),random.nextInt(8));
+//			player.forceMove(m);
+//			player.opponentMove(m2);
+//		}
 //		m = new Move(0,3);
 //		player.forceMove(m);
 //		m = new Move(6,3);
@@ -945,10 +1001,10 @@ public class MachinePlayer extends Player {
 //		m2 = new Move(2,4);
 //		player.opponentMove(m2);
 		
-		
-		System.out.println(player.board);
-		System.out.println("machine chips number: " + player.machineChipsNum);
-		System.out.println("opponent chips number: " + player.oppoChipsNum);
+//		
+//		System.out.println(player.board);
+//		System.out.println("machine chips number: " + player.machineChipsNum);
+//		System.out.println("opponent chips number: " + player.oppoChipsNum);
 //		System.out.println("chip x position: " + player.machineChips[0].getX() + " chip y position: " + player.machineChips[0].getY());
 //		List list = player.findNeighbor(player.machineChips[5], player.turn);
 //		System.out.println(list);
@@ -956,24 +1012,89 @@ public class MachinePlayer extends Player {
 //		player.findPath(player.turn, player.machineChips[5]);
 //		System.out.println("paths: " + player.machinePaths);
 //		System.out.println("pathsLength: " + player.machinePaths.length() );
-		player.findPaths(player.turn);
-		System.out.println("paths:" + player.machinePaths);
-		System.out.println("pathsLength:" + player.machinePaths.length());
-		Connection conn = player.checkPaths(player.turn);
-		player.checkPaths(player.turn);
-		if(conn != null){
-			System.out.println("max score: " + conn.getScore() + " , is End? " + conn.isEnd());
-		}
-		Move[] moves = player.findAllMoves(player.turn);
-		for(Move move : moves){
-			if(move!= null){
-				System.out.println(move);
-			}
-		}
-		if(moves[0] == null){
-			System.out.println("fuckyou");
-		}
+//		player.findPaths(player.turn);
+//		System.out.println("paths:" + player.machinePaths);
+//		System.out.println("pathsLength:" + player.machinePaths.length());
+//		Connection conn = player.checkPaths(player.turn);
+//		player.checkPaths(player.turn);
+//		if(conn != null){
+//			System.out.println("max score: " + conn.getScore() + " , is End? " + conn.isEnd());
+//		}
+//		Move[] moves = player.findAllMoves(player.turn);
+//		for(Move move : moves){
+//			if(move!= null){
+//				System.out.println(move);
+//			}
+//		}
+//		if(moves[0] == null){
+//			System.out.println("fuckyou");
+//		}
+//		
+		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
+		System.out.println(player.board);
+		Move m = null; 
+		Move m2 = null;
+//		Random random = new Random();
+//		while(player.machineChipsNum<10){
+//			m = new Move(random.nextInt(8),random.nextInt(8));
+//			m2 = new Move(random.nextInt(8),random.nextInt(8));
+//			player.forceMove(m);
+//			player.opponentMove(m2);
+//		}	
+		m = new Move(0,2);
+		player.forceMove(m);
+		m = new Move(3,5);
+		player.opponentMove(m);
+		m = new Move(1,1);
+		player.forceMove(m);
+		m = new Move(2,0);
+		player.opponentMove(m);
+		m = new Move(3,1);
+		player.forceMove(m);
+		m = new Move(4,5);
+		player.opponentMove(m);
+		m = new Move(3,2);
+		player.forceMove(m);
+		m = new Move(3,0);
+		player.opponentMove(m);
+		m = new Move(1,4);
+		player.forceMove(m);
+		m2 = new Move(6,5);
+		player.opponentMove(m2);
+		m2 = new Move(2,4);
+		player.forceMove(m2);
+		m2 = new Move(3,3);
+		player.opponentMove(m2);
+		m2 = new Move(2,6);
+		player.forceMove(m2);
+		m2 = new Move(6,6);
+		player.opponentMove(m2);
+		m2 = new Move(1,6);
+		player.forceMove(m2);
+		m2 = new Move(1,2);
+		player.opponentMove(m2);
+		m2 = new Move(5,1);
+		player.forceMove(m2);
+		m2 = new Move(1,3);
+		player.opponentMove(m2);
+		m2 = new Move(6,1);
+		player.forceMove(m2);
+		m2 = new Move(4,3);
+		player.opponentMove(m2);
+		m = new Move(0,1,1,1);
+		player.forceMove(m);
+		m2 = new Move(2,7,3,0);
+		player.opponentMove(m2);
+		m = new Move(2,2,3,1);
+		player.forceMove(m);
+		m2 = new Move(3,7,3,5);
+		player.opponentMove(m2);
 		
+		
+		System.out.println(player.board);
+		System.out.println("machine chips number: " + player.machineChipsNum);
+		System.out.println("opponent chips number: " + player.oppoChipsNum);
+		m2 = player.chooseMove();
 		
 	}
 

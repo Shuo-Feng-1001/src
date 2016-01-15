@@ -48,6 +48,9 @@ public class SimpleBoard {
 	   * check : 1. no chip may be placed in a square that is already occupied
 	   * 		 2. no chip may be placed in any of the four corners
 	   */
+	  if(tempX < 0 || tempX >= DIMENSION || tempY < 0 || tempY >= DIMENSION){
+		  return false;
+	  }
 	  if(elementAt(tempX,tempY) != EMPTY){
 		  return false;
 	  }
@@ -127,10 +130,10 @@ public class SimpleBoard {
 	   */
 	  // ADD
 	  int chipValue = turn == MachinePlayer.WHITE_FIRST? WHITE:BLACK;
-	  if(m.moveKind == 1){
+	  if(m.moveKind == Move.ADD){
 		  this.setElementAt(m.x1, m.y1, chipValue);
 	  // STEP
-	  }else if(m.moveKind == 2){
+	  }else if(m.moveKind == Move.STEP){
 		  this.setElementAt(m.x2, m.y2, 0);
 		  this.setElementAt(m.x1, m.y1, chipValue);
 	  }
