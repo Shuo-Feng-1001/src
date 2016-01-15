@@ -48,6 +48,9 @@ public class SimpleBoard {
 	   * check : 1. no chip may be placed in a square that is already occupied
 	   * 		 2. no chip may be placed in any of the four corners
 	   */
+	  if(tempX < 0 || tempX >=DIMENSION || tempY<0 || tempY >=DIMENSION){
+		  return false;
+	  }
 	  if(elementAt(tempX,tempY) != EMPTY){
 		  return false;
 	  }
