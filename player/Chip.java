@@ -1,6 +1,5 @@
 package player;
 
-import board.SimpleBoard;
 
 public class Chip {
 	private int x;

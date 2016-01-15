@@ -6,10 +6,7 @@ package player;
 import java.util.Random;
 
 import board.SimpleBoard;
-import list.DList;
-import list.InvalidNodeException;
-import list.List;
-import list.SList;
+import list.*;
 
 /**
  *  An implementation of an automatic Network player.  Keeps track of moves
@@ -457,6 +454,43 @@ public class MachinePlayer extends Player {
 		 }
 	  return false;
   }
+  
+  
+  public boolean checkGoalAreaA(Chip chip){
+	  if(chip.getChipValue() == BLACK){
+			 if(chip.getY() == 0){
+				 return true;
+			 }
+		 }
+		 if(chip.getChipValue() == WHITE){
+			 if(chip.getX() == 0){
+				 return true;
+			 }
+		 }
+	  return false;
+  }
+  
+  
+  
+  public boolean checkGoalAreaB(Chip chip){
+	  if(chip.getChipValue() == BLACK){
+			 if(chip.getY() == 0){
+				 return true;
+			 }
+		 }
+		 if(chip.getChipValue() == WHITE){
+			 if(chip.getX() == 0){
+				 return true;
+			 }
+		 }
+	  return false;
+  }
+  
+  
+  
+  
+  
+  
   /**
    * findPath() is the method to find all of the potential network given the 
    * specific chip
@@ -475,7 +509,6 @@ public class MachinePlayer extends Player {
 	  List neighbors = null;
 	  Chip currentChip = null;
 	  Chip neighChip = null;
-//	  Connection conn = null;
 	  boolean goalChip = false;
 	  /* flag is the flag to tell when is to insert the path, like pop after push that should work*/
 	  boolean flag = true;
@@ -534,22 +567,80 @@ public class MachinePlayer extends Player {
 	  Chip[] chips = null;
 	  /*empty the current paths list*/
 	  if(color == turn){
-		  machinePaths = new DList();
+		  machinePaths = new SList();
 		  chips = this.machineChips;
 	  }else if(color == opponent){
-		  opponentPaths = new DList(); 
+		  opponentPaths = new SList(); 
 		  chips = this.opponentChips;
 	  }
 	  for(Chip chip : chips){
 		  if(chip != null){
 			  chip.setDirect(0);
-			  System.out.println(chip);
 			  this.findPath(color, chip);
 		  }
+	  }	  
+  }
+  
+  
+  public Connection checkPaths(int color){
+	  List paths = null;
+	  Connection conn = new Connection();
+	  /*  count the number of chips in the goal area, like A is like the left area*/
+	  int countGoalAreaA = 0;
+	  int countGoalAreaB = 0;
+	  if(color == turn){
+		  paths = machinePaths;
+	  }else if(color == opponent){
+		  paths = opponentPaths; 
 	  }
+	  int score;
+	  /* count the max score of the path*/
+	  int maxScore =0;
+	  ListNode node = paths.front();
+	  List path = null;
+	  Chip chip = null;
+	  try{
+		  while(node.isValidNode()){
+			  path = (List)node.item();
+			  score = 0;
+			  countGoalAreaA = 0;
+			  countGoalAreaB = 0;
+			  while(!path.isEmpty()){
+				  chip = (Chip) ((SList)path).pop();
+				  if(checkGoalAreaA(chip)){
+					  countGoalAreaA++;
+					  score += 10;
+					  continue;
+				  }
+				  if(checkGoalAreaB(chip)){
+					  countGoalAreaB++;
+					  score += 10;
+					  continue;
+				  }
+				  score += 5;
+			  }
+			  if(countGoalAreaA > 1 || countGoalAreaB > 1){
+				  score = 0;
+			  }
+			  if(countGoalAreaA == 1 && countGoalAreaB == 1){
+				  score = 100;
+				  conn.setEnd(true);
+				  break;
+			  }
+			  if(maxScore < score){
+				  maxScore = score;  
+			  }	
+			  node = node.next();
+		  } 
+	  }catch(InvalidNodeException e){
+		  e.printStackTrace();
+	  }
+	  conn.setScore(maxScore);
 	  
+	  return conn;	  
 	  
   }
+  
   
   
   
@@ -690,38 +781,38 @@ public class MachinePlayer extends Player {
 		Move m = null; 
 		Move m2 = null;
 		Random random = new Random();
-//		for(int i = 0; i< 10; i++){
-//			m = new Move(random.nextInt(8),random.nextInt(8));
-//			m2 = new Move(random.nextInt(8),random.nextInt(8));
-//			player.forceMove(m);
-//			player.opponentMove(m2);
-//		}
-		m = new Move(0,3);
-		player.forceMove(m);
-		m = new Move(6,3);
-		player.forceMove(m);
-		m = new Move(6,4);
-		player.forceMove(m);
-		m = new Move(7,1);
-		player.forceMove(m);
+		for(int i = 0; i< 10; i++){
+			m = new Move(random.nextInt(8),random.nextInt(8));
+			m2 = new Move(random.nextInt(8),random.nextInt(8));
+			player.forceMove(m);
+			player.opponentMove(m2);
+		}
+//		m = new Move(0,3);
+//		player.forceMove(m);
+//		m = new Move(6,3);
+//		player.forceMove(m);
+//		m = new Move(6,4);
+//		player.forceMove(m);
+//		m = new Move(7,1);
+//		player.forceMove(m);
 //		m = new Move(4,1);
 //		player.forceMove(m);
 //		m = new Move(4,3);
 //		player.forceMove(m);
-		m2 = new Move(2,1);
-		player.opponentMove(m2);
-		m2 = new Move(3,1);
-		player.opponentMove(m2);
-		m2 = new Move(5,2);
-		player.opponentMove(m2);
-		m2 = new Move(5,3);
-		player.opponentMove(m2);
-		m2 = new Move(5,5);
-		player.opponentMove(m2);
-		m2 = new Move(1,7);
-		player.opponentMove(m2);
-		m2 = new Move(2,4);
-		player.opponentMove(m2);
+//		m2 = new Move(2,1);
+//		player.opponentMove(m2);
+//		m2 = new Move(3,1);
+//		player.opponentMove(m2);
+//		m2 = new Move(5,2);
+//		player.opponentMove(m2);
+//		m2 = new Move(5,3);
+//		player.opponentMove(m2);
+//		m2 = new Move(5,5);
+//		player.opponentMove(m2);
+//		m2 = new Move(1,7);
+//		player.opponentMove(m2);
+//		m2 = new Move(2,4);
+//		player.opponentMove(m2);
 		
 		
 		System.out.println(player.board);
@@ -737,6 +828,11 @@ public class MachinePlayer extends Player {
 		player.findPaths(player.turn);
 		System.out.println("paths:" + player.machinePaths);
 		System.out.println("pathsLength:" + player.machinePaths.length());
+		Connection conn = player.checkPaths(player.turn);
+		player.checkPaths(player.turn);
+		if(conn != null){
+			System.out.println("max score: " + conn.getScore() + " , is End? " + conn.isEnd());
+		}
 		
 	}
 

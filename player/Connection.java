@@ -1,30 +1,28 @@
 package player;
 
-import list.List;
 
 public class Connection {
-	private List path;
-	private boolean hasGoal;
+	private int score;
+	private boolean isEnd;
 	public Connection() {
-		this.path = null;
-		this.hasGoal = false;
+		this.score = 0;
+		this.isEnd = false;
 	}
-	public Connection(List path, boolean hasGoal) {
-		this.path = path;
-		this.hasGoal = hasGoal;
+	public Connection(int score, boolean isEnd) {
+		this.score = score;
+		this.isEnd = isEnd;
 	}
-	
-	public List getpath() {
-		return path;
+	public int getScore() {
+		return score;
 	}
-	public void setpath(List path) {
-		this.path = path;
+	public void setScore(int score) {
+		this.score = score;
 	}
 	public boolean isEnd() {
-		return hasGoal;
+		return isEnd;
 	}
-	public void setEnd(boolean hasGoal) {
-		this.hasGoal = hasGoal;
+	public void setEnd(boolean isEnd) {
+		this.isEnd = isEnd;
 	}
 	
 
