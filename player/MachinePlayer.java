@@ -13,7 +13,7 @@ import list.*;
  *  made by both players.  Can select a move for itself.
  */
 public class MachinePlayer extends Player {
-  public static int SEARCHDEPTH = 3;
+  public static int SEARCHDEPTH = 4;
   private int machineChipsNum;
   private int oppoChipsNum;
   private SimpleBoard board;
@@ -153,20 +153,22 @@ public class MachinePlayer extends Player {
 		  // Set the score to be current score, no extra move
 		  myBest.score = c.getScore();
 		  //Adjust the score according to winning chance and current depth
-//		  if(myBest.score > 0){
-//			  if(myBest.score - 2 * searchDepth > 0){
-//				  myBest.score  -= 2 * searchDepth;
-//			  } else{
-//				  myBest.score = 5;
-//			  }
-//		  } else if(myBest.score < 0){
-//			  if(myBest.score + 2 * searchDepth < 0){
-//				  myBest.score  += 2 * searchDepth;
-//			  } else{
-//				  myBest.score = -5;
-//			  }
-//		  }
-//		  System.out.println("Search ends here and I would return!");
+		  if(c.isEnd()){
+			  if(myBest.score > 0){
+				  if(myBest.score - searchDepth > 0){
+					  myBest.score  -=  searchDepth;
+				  } else{
+					  myBest.score = 5;
+				  }
+			  } else if(myBest.score < 0){
+				  if(myBest.score + searchDepth < 0){
+					  myBest.score += searchDepth;
+				  } else{
+					  myBest.score = -5;
+				  }
+			  }
+		  }
+//		  
 		  return myBest;
 	  }
 	  
@@ -870,7 +872,7 @@ public class MachinePlayer extends Player {
   
   
 	public static void main(String[] args) {
-		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
+		MachinePlayer player = new MachinePlayer(BLACK_SECOND);
 		MachinePlayer oppo = new MachinePlayer(BLACK_SECOND);
 		System.out.println(player.board);
 		Move m = null; 
@@ -907,30 +909,32 @@ public class MachinePlayer extends Player {
 		
 		
 //		player.opponentMove(m);
-		m = new Move(0,4);
+		m = new Move(5,4);
+		player.opponentMove(m);
+		m = new Move(4,0);
 		player.forceMove(m);
-		m = new Move(4,2);
+		m = new Move(3,2);
 		player.opponentMove(m);
 		m = new Move(3,1);
 		player.forceMove(m);
-		m = new Move(3,7);
+		m = new Move(2,2);
 		player.opponentMove(m);
-		m = new Move(7,1);
+		m = new Move(4,3);
 		player.forceMove(m);
-		m = new Move(6,3);
+		m = new Move(5,2);
 		player.opponentMove(m);
-		m = new Move(5,3);
+		m = new Move(1,1);
 		player.forceMove(m);
-		m2 = new Move(2,1);
+		m2 = new Move(6,4);
 		player.opponentMove(m2);
+		m2 = new Move(1,3);
+		player.forceMove(m2);
 		m2 = new Move(5,1);
-		player.forceMove(m2);
-		m2 = new Move(4,4);
 		player.opponentMove(m2);
-		m2 = new Move(1,4);
-		player.forceMove(m2);
-		m2 = new Move(1,0);
-		player.opponentMove(m2);
+//		m2 = new Move(1,4);
+//		player.forceMove(m2);
+//		m2 = new Move(1,0);
+//		player.opponentMove(m2);
 //		m2 = new Move(4,3);
 //		player.forceMove(m2);
 //		m2 = new Move(6,0);
@@ -951,7 +955,7 @@ public class MachinePlayer extends Player {
 //		player.forceMove(m);
 //		m2 = new Move(3,7,3,5);
 //		player.opponentMove(m2);
-		System.out.println(player.turn);
+		System.out.println(player.board);
 		m = player.chooseMove();
 		System.out.println(m);
 //		m2 = player.chooseMove();
