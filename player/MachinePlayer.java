@@ -131,7 +131,7 @@ public class MachinePlayer extends Player {
 	  
 //	  System.out.println("Hi I'm in the depth:" + searchDepth);
 	  
-	  this.findPaths(turn);
+//	  this.findPaths(turn);
 	  
 //	  System.out.println("I found all paths!"); 
 	  
@@ -859,7 +859,6 @@ public class MachinePlayer extends Player {
   
 	public static void main(String[] args) {
 		MachinePlayer player = new MachinePlayer(WHITE_FIRST);
-		System.out.println(player.board);
 		Move m = null; 
 		Move m2 = null;
 		Random random = new Random();
@@ -876,7 +875,15 @@ public class MachinePlayer extends Player {
 		
 		m = new Move(0,2);
 		player.forceMove(m);
-		m = new Move(7,2);
+		m = new Move(2,2);
+		player.forceMove(m);
+		m2 = new Move(5,6);
+		player.opponentMove(m2);
+		m2 = new Move(6,0);
+		player.opponentMove(m2);
+		System.out.println(player.board);
+		
+		m = player.chooseMove();
 		player.forceMove(m);
 		player.findPaths(player.turn);
 		Connection conn1 = player.checkPaths(player.turn);
@@ -928,11 +935,11 @@ public class MachinePlayer extends Player {
 //		player.opponentMove(m2);
 		
 		
-		System.out.println(player.board);
-		System.out.println("machine chips number: " + player.machineChipsNum);
-		System.out.println("opponent chips number: " + player.oppoChipsNum);
+//		System.out.println(player.board);
+//		System.out.println("machine chips number: " + player.machineChipsNum);
+//		System.out.println("opponent chips number: " + player.oppoChipsNum);
 //		Move testMove = player.chooseMove();
-		System.out.println(m);
+//		System.out.println(m);
 //		m2 = player.chooseMove();
 		//m2 = new Move(3,4);
 //		m2 = new Move(3,1);
