@@ -134,10 +134,16 @@ public class MachinePlayer extends Player {
 	  
 //	  System.out.println("I found all paths!"); 
 	  
-	  Connection c = new Connection();
+	  Connection c1 = new Connection();
+	  Connection c2 = new Connection();
 	  //Compute the score of current board, as well as check if game ends
 	  this.findPaths(turn);
-	  c = this.checkPaths(turn);
+	  c1 = this.checkPaths(turn);
+	  this.findPaths((turn+1)%2);
+	  c2 = this.checkPaths((turn+1)%2);
+	  Connection c = new Connection();
+	  c.setScore(c1.getScore() + c2.getScore());
+	  c.setEnd(c1.isEnd() || c2.isEnd());
 	  
 //	  System.out.println("I checked all paths!");
 	  
