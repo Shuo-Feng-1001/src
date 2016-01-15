@@ -149,7 +149,6 @@ public class MachinePlayer extends Player {
 			  return myBest;
 		  }
 	  }
-	  //actually not reachable, just for convincing compiler of eclipse
 	  return myBest;
   }
   
