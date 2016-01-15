@@ -13,7 +13,7 @@ import list.*;
  *  made by both players.  Can select a move for itself.
  */
 public class MachinePlayer extends Player {
-  public static int SEARCHDEPTH = 2;
+  public static int SEARCHDEPTH = 3;
   private int machineChipsNum;
   private int oppoChipsNum;
   private SimpleBoard board;
@@ -48,7 +48,7 @@ public class MachinePlayer extends Player {
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int turn) {
-	  this(turn,2);
+	  this(turn,SEARCHDEPTH);
   }
  
   
@@ -110,6 +110,7 @@ public class MachinePlayer extends Player {
 	}else{
 		BestMove bestMove = abtree(Integer.MIN_VALUE,Integer.MAX_VALUE,0,this.board,this.turn);
 		m = bestMove.move;
+		System.out.println(bestMove.score);
 	}
 	if(this.forceMove(m)){	
 		return m;
@@ -848,57 +849,67 @@ public class MachinePlayer extends Player {
 		player.forceMove(m);
 		m = new Move(3,5);
 		player.opponentMove(m);
-		m = new Move(1,1);
+		m = new Move(1,2);
 		player.forceMove(m);
 		m = new Move(2,0);
 		player.opponentMove(m);
-		m = new Move(3,1);
-		player.forceMove(m);
-		m = new Move(4,5);
-		player.opponentMove(m);
-		m = new Move(3,2);
-		player.forceMove(m);
-		m = new Move(3,0);
-		player.opponentMove(m);
-		m = new Move(1,4);
-		player.forceMove(m);
-		m2 = new Move(6,5);
-		player.opponentMove(m2);
-		m2 = new Move(2,4);
-		player.forceMove(m2);
-		m2 = new Move(3,3);
-		player.opponentMove(m2);
-		m2 = new Move(2,6);
-		player.forceMove(m2);
-		m2 = new Move(6,6);
-		player.opponentMove(m2);
-		m2 = new Move(1,6);
-		player.forceMove(m2);
-		m2 = new Move(1,2);
-		player.opponentMove(m2);
-		m2 = new Move(5,1);
-		player.forceMove(m2);
-		m2 = new Move(1,3);
-		player.opponentMove(m2);
-		m2 = new Move(6,1);
-		player.forceMove(m2);
-		m2 = new Move(4,3);
-		player.opponentMove(m2);
-		m = new Move(0,1,1,1);
-		player.forceMove(m);
-		m2 = new Move(2,7,3,0);
-		player.opponentMove(m2);
-		m = new Move(2,2,3,1);
-		player.forceMove(m);
-		m2 = new Move(3,7,3,5);
-		player.opponentMove(m2);
+//		m = new Move(3,1);
+//		player.forceMove(m);
+//		m = new Move(4,5);
+//		player.opponentMove(m);
+//		m = new Move(3,2);
+//		player.forceMove(m);
+//		m = new Move(3,0);
+//		player.opponentMove(m);
+//		m = new Move(1,4);
+//		player.forceMove(m);
+//		m2 = new Move(6,5);
+//		player.opponentMove(m2);
+//		m2 = new Move(2,4);
+//		player.forceMove(m2);
+//		m2 = new Move(3,3);
+//		player.opponentMove(m2);
+//		m2 = new Move(2,6);
+//		player.forceMove(m2);
+//		m2 = new Move(6,6);
+//		player.opponentMove(m2);
+//		m2 = new Move(1,6);
+//		player.forceMove(m2);
+//		m2 = new Move(1,2);
+//		player.opponentMove(m2);
+//		m2 = new Move(5,1);
+//		player.forceMove(m2);
+//		m2 = new Move(1,3);
+//		player.opponentMove(m2);
+//		m2 = new Move(6,1);
+//		player.forceMove(m2);
+//		m2 = new Move(4,3);
+//		player.opponentMove(m2);
+//		m = new Move(0,1,1,1);
+//		player.forceMove(m);
+//		m2 = new Move(2,7,3,0);
+//		player.opponentMove(m2);
+//		m = new Move(2,2,3,1);
+//		player.forceMove(m);
+//		m2 = new Move(3,7,3,5);
+//		player.opponentMove(m2);
 		
 		
 		System.out.println(player.board);
 		System.out.println("machine chips number: " + player.machineChipsNum);
 		System.out.println("opponent chips number: " + player.oppoChipsNum);
-		m2 = player.chooseMove();
+//		m2 = player.chooseMove();
+		m2 = new Move(3,4);
+//		m2 = new Move(3,1);
+		player.forceMove(m2);
 		System.out.println(m2);
+		player.findPaths(player.turn);
+		System.out.println(player.board);
+		System.out.println(player.machinePaths);
+		player.findPaths(player.turn);
+		Connection conn = player.checkPaths(player.turn);
+		System.out.println(conn.getScore());
+//		System.out.println();
 		
 		
 
