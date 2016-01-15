@@ -801,8 +801,8 @@ public class MachinePlayer extends Player {
 	  ListNode chipNode = null;
 	  List path = null;
 	  Chip chip = null;
-	  int count = 0;
-	  int orderCount = 0;
+	  int count;
+	  int orderCount;
 	  try{
 		  while(node.isValidNode()){
 			  path = (List)node.item();
@@ -810,6 +810,8 @@ public class MachinePlayer extends Player {
 			  countGoalAreaA = 0;
 			  countGoalAreaB = 0;
 			  chipNode = path.front();
+			  count = 0;
+			  orderCount = 0;
 			  while(chipNode.isValidNode()){
 				  chip = (Chip)chipNode.item();
 				  count++;
@@ -905,34 +907,34 @@ public class MachinePlayer extends Player {
 		
 		
 //		player.opponentMove(m);
-		m = new Move(0,6);
+		m = new Move(0,4);
 		player.forceMove(m);
 		m = new Move(4,2);
 		player.opponentMove(m);
-		m = new Move(2,1);
+		m = new Move(3,1);
 		player.forceMove(m);
-		m = new Move(5,4);
+		m = new Move(3,7);
 		player.opponentMove(m);
-		m = new Move(2,4);
+		m = new Move(7,1);
 		player.forceMove(m);
-		m = new Move(4,4);
+		m = new Move(6,3);
 		player.opponentMove(m);
-		m = new Move(1,1);
+		m = new Move(5,3);
 		player.forceMove(m);
+		m2 = new Move(2,1);
+		player.opponentMove(m2);
+		m2 = new Move(5,1);
+		player.forceMove(m2);
+		m2 = new Move(4,4);
+		player.opponentMove(m2);
 		m2 = new Move(1,4);
-		player.opponentMove(m2);
-		m2 = new Move(1,3);
 		player.forceMove(m2);
-		m2 = new Move(2,2);
+		m2 = new Move(1,0);
 		player.opponentMove(m2);
-		m2 = new Move(6,1);
-		player.forceMove(m2);
-		m2 = new Move(1,7);
-		player.opponentMove(m2);
-		m2 = new Move(4,3);
-		player.forceMove(m2);
-		m2 = new Move(6,0);
-		player.opponentMove(m2);
+//		m2 = new Move(4,3);
+//		player.forceMove(m2);
+//		m2 = new Move(6,0);
+//		player.opponentMove(m2);
 //		m2 = new Move(5,1);
 //		player.forceMove(m2);
 //		m2 = new Move(1,3);
