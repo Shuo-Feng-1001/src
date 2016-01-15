@@ -817,6 +817,7 @@ public class MachinePlayer extends Player {
 					  countGoalAreaA++;
 					  score += 10;
 					  chipNode = chipNode.next();
+					  // check wheter this chip is the first chip or the last chip
 					  if(count == 1 || count == path.length()){
 						  orderCount++;
 					  }
