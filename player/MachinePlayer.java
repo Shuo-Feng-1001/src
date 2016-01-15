@@ -96,15 +96,17 @@ public class MachinePlayer extends Player {
 	  
 	  Connection c = new Connection();
 	  c = this.checkPaths(this.turn);
-	  if(true){
+	  if(c.isEnd()){
+		  myBest.score = alpha;
+	  } else{
+		  myBest.score = beta;
+	  }
+	  for(Move m: moves[]){
 		  
 	  }
 	  return myBest;
   }
   
-  public Connection checkPaths(int color){
-	  return null;
-  }
 	
 
 
