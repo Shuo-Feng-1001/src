@@ -13,7 +13,7 @@ import list.*;
  *  made by both players.  Can select a move for itself.
  */
 public class MachinePlayer extends Player {
-  public static int SEARCHDEPTH = 3;
+  public static int SEARCHDEPTH = 4;
   private int machineChipsNum;
   private int oppoChipsNum;
   private SimpleBoard board;
@@ -153,19 +153,19 @@ public class MachinePlayer extends Player {
 		  // Set the score to be current score, no extra move
 		  myBest.score = c.getScore();
 		  //Adjust the score according to winning chance and current depth
-//		  if(myBest.score > 0){
-//			  if(myBest.score - 5 * searchDepth > 0){
-//				  myBest.score  -= 5 * searchDepth;
-//			  } else{
-//				  myBest.score = 5;
-//			  }
-//		  } else if(myBest.score < 0){
-//			  if(myBest.score + 5 * searchDepth < 0){
-//				  myBest.score  += 5 * searchDepth;
-//			  } else{
-//				  myBest.score = -5;
-//			  }
-//		  }
+		  if(myBest.score > 0){
+			  if(myBest.score - 5 * searchDepth > 0){
+				  myBest.score  -=  searchDepth;
+			  } else{
+				  myBest.score = 5;
+			  }
+		  } else if(myBest.score < 0){
+			  if(myBest.score + 5 * searchDepth < 0){
+				  myBest.score  +=  searchDepth;
+			  } else{
+				  myBest.score = -5;
+			  }
+		  }
 //		  System.out.println("Search ends here and I would return!");
 		  return myBest;
 	  }
