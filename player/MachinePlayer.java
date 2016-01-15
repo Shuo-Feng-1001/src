@@ -91,23 +91,71 @@ public class MachinePlayer extends Player {
   }
   
   public BestMove abtree(int alpha,int beta,int searchDepth,SimpleBoard board,int turn){
+	  
 	  BestMove myBest = new BestMove();
 	  BestMove reply;
 	  
 	  Connection c = new Connection();
-	  c = this.checkPaths(this.turn);
-	  if(c.isEnd()){
+	  //Compute the score of current board, as well as check if game ends
+	  c = this.checkPaths(turn);
+	  //If the game ends, or comes to the specified SEARCHDEPTH
+	  if(c.isEnd()||searchDepth == this.SEARCHDEPTH){
+		  // Set the score to be current score, no extra move
+		  myBest.score = c.getScore();
+		  //Adjust the score according to the turn and the current depth
+		  if(turn == this.turn){
+			  myBest.score  -= 5 * searchDepth;
+		  } else{
+			  myBest.score  += 5 * searchDepth;
+		  }
+		  return myBest;
+	  }
+	  
+	  //Initialize myBest according to the turn
+	  if(turn == this.turn){
 		  myBest.score = alpha;
 	  } else{
 		  myBest.score = beta;
 	  }
-	  for(Move m: moves[]){
-		  
+	  //find all legal moves
+	  Move[] moves = this.findAllMoves(turn);
+	  
+	  //for each legal move
+	  for(Move m: moves){
+		  //record the current board
+		  SimpleBoard oldBoard = board;
+		  //perform move m
+		  this.forceMove(m);
+		  //change the turn
+		  int nextTurn = turn == this.turn? this.turn: (this.turn + 1)%2;
+		  //recursively call abtree for the next turn
+		  reply = abtree(alpha,beta,searchDepth + 1,board,nextTurn);
+		  //undo move m
+		  board = oldBoard;
+		  //If this turn is myTurn
+		  if((turn == this.turn)&&(reply.score > myBest.score)){
+			  myBest.move = m;
+			  myBest.score = reply.score;
+			  alpha = reply.score;
+		  }
+		  //If this turn is opponent's turn
+		  else if(turn == (this.turn + 1)%2 && reply.score < myBest.score){
+			  myBest.move = m;
+			  myBest.score = reply.score;
+			  beta = reply.score;
+		  }
+		  //alpha - beta pruning
+		  if(alpha >= beta){
+			  return myBest;
+		  }
 	  }
+	  //actually not reachable, just for convincing compiler of eclipse
 	  return myBest;
   }
   
-	
+  public Move[] findAllMoves(int color){
+	  return null;
+  }
 
 
   // If the Move m is legal, records the move as a move by the opponent
