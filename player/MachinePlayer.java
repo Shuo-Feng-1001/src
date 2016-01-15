@@ -90,6 +90,12 @@ public class MachinePlayer extends Player {
 	}   	
   }
   
+  
+  
+  
+  
+  
+  
   public BestMove abtree(int alpha,int beta,int searchDepth,SimpleBoard board,int turn){
 	  
 	  BestMove myBest = new BestMove();
@@ -111,13 +117,12 @@ public class MachinePlayer extends Player {
 		  return myBest;
 	  }
 	  
-	  //Initialize myBest according to the turn
 	  if(turn == this.turn){
 		  myBest.score = alpha;
 	  } else{
 		  myBest.score = beta;
 	  }
-	  //find all legal moves
+	//find all legal moves
 	  Move[] moves = this.findAllMoves(turn);
 	  
 	  //for each legal move
@@ -152,10 +157,77 @@ public class MachinePlayer extends Player {
 	  return myBest;
   }
   
-  public Move[] findAllMoves(int color){
-	  return null;
-  }
-
+  
+  
+  	/**
+  	 * findAllMovesAdd() method is when the player doesn't play 10 chips
+  	 * and find the next possible move
+  	 * @param turn
+  	 * @return
+  	 */
+    public Move[] findAllMovesAdd(int turn){
+    	Move[] moves= new Move[60];
+//    	int chipValue = turn == MachinePlayer.WHITE_FIRST? WHITE:BLACK;
+    	Move move = null;
+    	int count = 0;
+    	for(int y =0; y<DIMENSION; y++){
+    		for(int x=0; x<DIMENSION; x++){
+    			move = new Move(x,y);
+    			if(this.board.isValidMove(move, turn)){
+    				moves[count] = move;
+    				count++;
+    			}
+    		}
+    	}
+		return moves;
+    }
+    /**
+     * findAllMoves() method is to find the next possible moves
+     * in thiss method, it includes the step and add conditions
+     * @param turn
+     * @return
+     */
+    public Move[] findAllMoves(int turn){
+    	Move[] moves = new Move[60];
+    	Move move = null;
+    	int[][] direction = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { 0, 1 } };
+    	int count = 0;
+    	if(turn == this.turn){
+    		// step condition
+    		if(this.machineChipsNum == 10){
+    			for(int i= 0; i<10; i++){
+    				for (int j = 0; j < 8; j++) {
+    					move = new Move(this.machineChips[i].getX()+direction[i][0],this.machineChips[i].getY()+direction[i][1],this.machineChips[i].getX(),this.machineChips[i].getY());
+    					if(this.board.isValidMove(move, turn)){
+    						moves[count] = move;
+    	    				count++;
+    					}
+    				}	
+    			}
+    		// the add condition
+    		}else{
+    			moves = findAllMovesAdd(turn);
+    		}
+    	}else{
+    		// step condition
+    		if(this.oppoChipsNum == 10){
+    			for(int i= 0; i<10; i++){
+    				for (int j = 0; j < 8; j++) {
+    					move = new Move(this.opponentChips[i].getX()+direction[i][0],this.opponentChips[i].getY()+direction[i][1],this.opponentChips[i].getX(),this.opponentChips[i].getY());
+    					if(this.board.isValidMove(move, turn)){
+    						moves[count] = move;
+    	    				count++;
+    					}
+    				}	
+    			}
+    		// the add condition
+    		}else{
+    			moves = findAllMovesAdd(turn);
+    		}
+    	}
+    	
+    	return moves;	
+    }
 
   // If the Move m is legal, records the move as a move by the opponent
   // (updates the internal game board) and returns true.  If the move is
@@ -644,8 +716,9 @@ public class MachinePlayer extends Player {
 	  }
 	  int score;
 	  /* count the max score of the path*/
-	  int maxScore =0;
+	  int maxScore = 0;
 	  ListNode node = paths.front();
+	  ListNode chipNode = null;
 	  List path = null;
 	  Chip chip = null;
 	  try{
@@ -654,27 +727,33 @@ public class MachinePlayer extends Player {
 			  score = 0;
 			  countGoalAreaA = 0;
 			  countGoalAreaB = 0;
-			  while(!path.isEmpty()){
-				  chip = (Chip) ((SList)path).pop();
+			  chipNode = path.front();
+			  while(chipNode.isValidNode()){
+				  chip = (Chip)chipNode.item();
 				  if(checkGoalAreaA(chip)){
 					  countGoalAreaA++;
 					  score += 10;
+					  chipNode = chipNode.next();
 					  continue;
 				  }
 				  if(checkGoalAreaB(chip)){
 					  countGoalAreaB++;
 					  score += 10;
+					  chipNode = chipNode.next();
 					  continue;
 				  }
 				  score += 5;
+				  chipNode = chipNode.next();
 			  }
 			  if(countGoalAreaA > 1 || countGoalAreaB > 1){
 				  score = 0;
 			  }
 			  if(countGoalAreaA == 1 && countGoalAreaB == 1){
-				  score = 100;
-				  conn.setEnd(true);
-				  break;
+				  if(path.length() >= 6){
+					  score = 100;
+					  conn.setEnd(true);
+					  break;
+				  }
 			  }
 			  if(maxScore < score){
 				  maxScore = score;  
@@ -684,8 +763,11 @@ public class MachinePlayer extends Player {
 	  }catch(InvalidNodeException e){
 		  e.printStackTrace();
 	  }
-	  conn.setScore(maxScore);
-	  
+	  if(color == turn){
+		  conn.setScore(maxScore);
+	  }else{
+		  conn.setScore(-maxScore);
+	  }
 	  return conn;	  
 	  
   }
@@ -882,6 +964,16 @@ public class MachinePlayer extends Player {
 		if(conn != null){
 			System.out.println("max score: " + conn.getScore() + " , is End? " + conn.isEnd());
 		}
+		Move[] moves = player.findAllMoves(player.turn);
+		for(Move move : moves){
+			if(move!= null){
+				System.out.println(move);
+			}
+		}
+		if(moves[0] == null){
+			System.out.println("fuckyou");
+		}
+		
 		
 	}
 
