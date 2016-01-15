@@ -801,8 +801,8 @@ public class MachinePlayer extends Player {
 	  ListNode chipNode = null;
 	  List path = null;
 	  Chip chip = null;
-	  int count = 0;
-	  int orderCount = 0;
+	  int count;
+	  int orderCount;
 	  try{
 		  while(node.isValidNode()){
 			  path = (List)node.item();
@@ -810,6 +810,8 @@ public class MachinePlayer extends Player {
 			  countGoalAreaA = 0;
 			  countGoalAreaB = 0;
 			  chipNode = path.front();
+			  count = 0;
+			  orderCount = 0;
 			  while(chipNode.isValidNode()){
 				  chip = (Chip)chipNode.item();
 				  count++;
@@ -903,7 +905,7 @@ public class MachinePlayer extends Player {
 		
 		
 //		player.opponentMove(m);
-		m = new Move(0,6);
+		m = new Move(0,4);
 		player.forceMove(m);
 		m = new Move(2,2);
 		player.forceMove(m);
